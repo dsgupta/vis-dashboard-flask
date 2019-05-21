@@ -61,7 +61,7 @@ function initialize(data, mds_data, sm_data, bi_data, feat_data){
 }
 
 
-function render_plot(data, mds_data, sm_data, bi_data, feat_data){
+function render_plot(data, mds_data, sm_data, bi_data, feat_data, drawMDS=true, drawFeat=true, drawBi=true){
 
   // d3.selectAll("svg > *").remove();
   render_map_plot_v2(data);
@@ -71,10 +71,16 @@ function render_plot(data, mds_data, sm_data, bi_data, feat_data){
   console.log("Scatter Matrix DATA")
   console.log(sm_data)
   console.log("Finish sm")
-  drawScatter(mds_data);
+  if(drawMDS){
+    drawScatter(mds_data);
+  }
   drawScatterMatrix(sm_data);
-  drawBiPlot(bi_data);
-  drawFeats(feat_data)
+  if(drawMDS){
+    drawBiPlot(bi_data);
+  }
+  if(drawMDS){
+    drawFeats(feat_data)
+  }
 
 }
 
@@ -147,7 +153,7 @@ function render_scatter_plot(data){
 }
 
 
-function render_map_plot_v2(data, mds_data){
+function render_map_plot_v2(data){
   console.log("Called render map plot v2")
   var format = d3.format(",");
 
@@ -254,7 +260,7 @@ function render_map_plot_v2(data, mds_data){
           mds_data = JSON.parse(data_infunc.mds_data)
           drawScatter(mds_data);
       });
-      render_plot(mapData, mds_data, sm_data, bi_data, feat_data);
+      render_plot(mapData, mds_data, sm_data, bi_data, feat_data, drawMDS=false, drawFeat=false, drawBi=false);
     };
 
     var color = d3.scaleLinear()
