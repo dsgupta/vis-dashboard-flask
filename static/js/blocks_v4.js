@@ -289,7 +289,7 @@ function render_map_plot_v2(data, mds_data){
         .attr("d", path);
 
     console.log("Map plotted for " + current_year);
-
+    drawScatter(mds_data)
   }
 }
 
@@ -440,6 +440,67 @@ function drawScree(value) {
     console.log(value)
 
 })}
+
+function drawScatter(mds_data){
+
+
+  console.log(mds_data)
+
+  bar_svg.selectAll("*").remove();
+
+  var xScale = d3.scaleLinear()
+               .rangeRound([0, width])
+               .domain([d3.min(mds_data, (function (d) {
+                 return d.x;
+               })), d3.max(mds_data, (function (d) {
+                 return d.x;
+               }))]);
+
+   var  yScale = d3.scaleLinear()
+                .rangeRound([height, 0])
+                .domain([d3.min(mds_data, (function (d) {
+                  return d.y;
+                })), d3.max(mds_data, (function (d) {
+                  return d.y;
+                }))]);
+
+   // var svg = d3.select("svg")
+   //        .attr("width", width + margin.left + margin.right)
+   //        .attr("height", height + margin.top + margin.bottom)
+
+    var g = bar_svg.append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+              // g.append("text")
+              //        .attr("x", (width / 2))
+              //        .attr("y", 0 - (margin.top / 2))
+              //        .attr("text-anchor", "middle")
+              //        .style("font-size", "16px")
+              //        .style("text-decoration", "underline")
+              //        .text("Scatter Plot - Projection on 2 PCA");
+
+    // axis-x
+    g.append("g")
+        .attr("transform", "translate(0," + yScale(0) + ")")
+        .call(d3.axisBottom(xScale))
+
+
+    // axis-y
+    g.append("g")
+        //.attr("class", "axis axis--y")
+        .attr("transform", "translate(" + xScale(0) + ",0)")
+        .call(d3.axisLeft(yScale));
+
+
+
+
+    g.selectAll(".dot")
+        .data(mds_data)
+      .enter().append("circle") // Uses the enter().append() method
+        .attr("class", "scatter") // Assign a class for styling
+        .attr("cx", function(d) { return xScale(d.x); })
+        .attr("cy", function(d) { return yScale(d.y) })
+}
 
 function drawBiPlot(){
   $.post("", {'function': 'biplot'}, function(data_infunc){

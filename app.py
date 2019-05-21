@@ -79,26 +79,6 @@ def getMDS(data):
     return mds_corr
 
 
-
-
-def scatterType(button):
-
-    global projected, mds1, mds2, loaded
-    i = int(button[0])
-    buttons = button.split("_")
-
-    if len(buttons)==1 or buttons[1] == "PCA":
-        chart_data = projected[i].to_dict(orient='records')
-    elif buttons[1] == "mdsE":
-        chart_data = mds1[i].to_dict(orient='records')
-    elif buttons[1] == "mdsC":
-        chart_data = mds2[i].to_dict(orient='records')
-    elif buttons[1] == "matrix":
-        chart_data = loaded[i].to_dict(orient='records')
-    return chart_data
-
-
-
 #By default, a route only answers to GET requests. You can use the methods argument of the route() decorator to handle different HTTP methods.
 @app.route("/", methods = ['POST', 'GET'])
 def index():
