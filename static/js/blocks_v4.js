@@ -250,7 +250,11 @@ function render_map_plot_v2(data, mds_data){
       current_year = minYear + Math.floor((maxYear-minYear)*(val-slidermin)/(slidermax - slidermin))
       console.log(current_year);
       param = current_year.toString().concat("slider");
-      render_plot(mapData, mds_data, sm_data, bi_data, feat_data);  
+      $.post("", {'function': 'dropdown:' + current_feature + ";slider:" + current_year}, function(data_infunc){
+          mds_data = JSON.parse(data_infunc.mds_data)
+          drawScatter(mds_data);
+      });
+      render_plot(mapData, mds_data, sm_data, bi_data, feat_data);
     };
 
     var color = d3.scaleLinear()

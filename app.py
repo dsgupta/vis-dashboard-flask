@@ -26,6 +26,7 @@ map_data = None
 std_data = None
 mds1 = None
 mds2 = None
+year_mds = {}
 
 def getScree(data):
 
@@ -113,32 +114,12 @@ def index():
 
             year = int(buttonVal.replace("slider", ""))
 
-            data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
-            chart_data = data.to_dict(orient='records')
-            # print("CHART DATA AFTER TO DICT", chart_data)
-            curr_data = std_data[std_data['Year']==year][top10_featnames]
-            # print("Current data for countries: ")
-            # print(curr_data)
-            curr_mds = getMDS(curr_data)
-
-            chart_data = json.dumps(chart_data, indent=2)
+            curr_mds = year_mds[year]
             mds_data = curr_mds.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
             mds_data = json.dumps(mds_data, indent=2)
             # print("After jsoning: ", mds_data)
-
-            sm_data = curr_data.to_dict(orient='records')
-            sm_data = json.dumps(sm_data, indent=2)
-            # print("After jsoning: ", mds_data)
-            bi_data = projected_data.to_dict(orient='records')
-            # print("CHART DATA AFTER TO DICT", chart_data)
-            bi_data = json.dumps(bi_data, indent=2)
-            axes_data = biplot_data.to_dict(orient='records')
-            # print("AXES DATA AFTER TO DICT", axes_data)
-            axes_data = json.dumps(axes_data, indent=2)
-            feat_data = top10_feats.to_dict(orient='records')
-            feat_data = json.dumps(feat_data, indent=2)
-            data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data, 'bi_data': bi_data, 'axes_data': axes_data, 'feat_data':feat_data}
+            data = {'mds_data':mds_data}
             return jsonify(data)
 
         if buttonVal.startswith("dropdown"):
@@ -239,10 +220,14 @@ if __name__ == "__main__":
     top10_scree = scree[:10][:]
     top10_featnames = feat_names[:10][:]
     biplot(std_data[top10_featnames])
-    curr_data = std_data[std_data['Year']==2017][top10_featnames]
+
     # print("Current data for countries: ")
     # print(curr_data)
-    mds1 = getMDS(curr_data)
+    years = std_data['Year'].unique()
+    for year in years:
+        curr_data = std_data[std_data['Year']==year][top10_featnames]
+        year_mds[year] = getMDS(curr_data)
+    mds1 = year_mds[2017]
     print("Finished setting up mds1")
     print(mds1)
 
