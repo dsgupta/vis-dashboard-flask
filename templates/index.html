@@ -95,7 +95,7 @@
             <div id="line_chart" class="card-body">
               <!-- <svg id="map_svg"></svg> -->
             </div>
-            
+
             <div class="card-header">
               <i class="fas fa-chart-area"></i>
               Bar Chart</div>
@@ -138,7 +138,8 @@
   <script src="{{ url_for('static', filename='js/blocks_v4.js') }}"></script>
   <script>
   var data = {{ data.chart_data | safe }}
-  onLoad(data)
+  var mds_data = {{ data.mds_data | safe }}
+  onLoad(data, mds_data)
   </script>
 
 </body>

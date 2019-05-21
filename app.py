@@ -22,13 +22,10 @@ top10_scree = None
 top10_featnames = None
 biplot_data = None
 projected_data = None
-projected = [[]]*3
-mds1 = [[]]*3
-mds2 = [[]]*3
-feat_names = [[]]*3
-loaded = [[]]*3
-
 map_data = None
+std_data = None
+mds1 = None
+mds2 = None
 
 def getScree(data):
 
@@ -68,18 +65,19 @@ def getMaxPCALoadings(num_c, pca):
         feature_imp.append(components[i])
     return feature_imp
 
-def getMDS(data, i):
+def getMDS(data):
 
-    global mds1, mds2
 
-    D2 = pairwise_distances(data, metric='correlation')
-    D1 = pairwise_distances(data, metric='euclidean')
+
+    D1 = pairwise_distances(data, metric='correlation')
+    # D2 = pairwise_distances(data, metric='euclidean')
     model = MDS(n_components=2, dissimilarity='precomputed', random_state=1)
     out1 = model.fit_transform(D1)
-    out2 = model.fit_transform(D2)
-    mds1[i] = pd.DataFrame({"x":out1[:,0], "y":out1[:, 1]})
-    mds2[i] = pd.DataFrame({"x":out2[:,0], "y":out2[:, 1]})
-    return (mds1, mds2)
+    # out2 = model.fit_transform(D2)
+    mds_corr = pd.DataFrame({"x":out1[:,0], "y":out1[:, 1]})
+    # mds2 = pd.DataFrame({"x":out2[:,0], "y":out2[:, 1]})
+    return mds_corr
+
 
 
 
@@ -113,6 +111,7 @@ def index():
         print(projected_data)
 
         buttonVal =  request.form.get('function')
+        print("Button val!", buttonVal)
         # chart_data = None
         # #print("BUTTON VAL: ", buttonVal)
         # if buttonVal.endswith("Scree"):
@@ -130,12 +129,19 @@ def index():
         # print("What is data? ", data)
         # print(jsonify(data))
         # return jsonify(data) # Should be a json string
-        if buttonVal == "slider":
+        if buttonVal.endswith("slider"):
             data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
             chart_data = data.to_dict(orient='records')
-            print("CHART DATA AFTER TO DICT", chart_data)
+            # print("CHART DATA AFTER TO DICT", chart_data)
             chart_data = json.dumps(chart_data, indent=2)
-            data = {'chart_data': chart_data}
+            year = int(buttonVal.replace("slider", ""))
+            print("YEAR!", year)
+            curr_data = std_data[std_data['Year']==year][top10_featnames]
+            curr_mds = getMDS(curr_data)
+            mds_data = curr_mds.to_dict(orient='records')
+            mds_data = json.dumps(mds_data, indent=2)
+            # print("After jsoning: ", mds_data)
+            data = {'chart_data': chart_data, 'mds_data':mds_data}
             return jsonify(data)
         elif buttonVal == "feats":
             chart_data = top20_feats.to_dict(orient='records')
@@ -144,12 +150,12 @@ def index():
             data = {'chart_data': chart_data}
             return jsonify(data)
         elif buttonVal == "biplot":
-            print("Projected Data after Button Click", projected_data)
+            # print("Projected Data after Button Click", projected_data)
             chart_data = projected_data.to_dict(orient='records')
-            print("CHART DATA AFTER TO DICT", chart_data)
+            # print("CHART DATA AFTER TO DICT", chart_data)
             chart_data = json.dumps(chart_data, indent=2)
             axes_data = biplot_data.to_dict(orient='records')
-            print("AXES DATA AFTER TO DICT", axes_data)
+            # print("AXES DATA AFTER TO DICT", axes_data)
             axes_data = json.dumps(axes_data, indent=2)
             data = {'chart_data': chart_data, 'axes_data': axes_data}
             return jsonify(data)
@@ -157,11 +163,16 @@ def index():
 
 
     else:
+        # print(map_data)
         data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
         chart_data = data.to_dict(orient='records')
         # print("CHART DATA AFTER TO DICT", chart_data)
         chart_data = json.dumps(chart_data, indent=2)
-        data = {'chart_data': chart_data}
+        mds_data = mds1.to_dict(orient='records')
+        # print("CHART DATA AFTER TO DICT", chart_data)
+        mds_data = json.dumps(mds_data, indent=2)
+        # print("After jsoning: ", mds_data)
+        data = {'chart_data': chart_data, 'mds_data':mds_data}
         return render_template("index.html", data=data)
 
 # @app.route("/member", methods = ['POST', 'GET'])
@@ -187,22 +198,27 @@ def getData():
     cols = data.columns
     std = data.copy()
     std[cols[3:]] = StandardScaler().fit_transform(std[cols[3:]])
-    return data, std[cols[3:]]
+    return data, std
 
 if __name__ == "__main__":
 
     # data_scale, random_scale, strat_scale, elbow = getData()
     map_data, std_data = getData()
-    scree, feats, feat_names= getScree(std_data)
-    print("Scree: ", scree)
-    print("Features: ", feats)
-    print("Feat names: ", feat_names)
-    print(feats.shape)
+    scree, feats, feat_names= getScree(std_data[std_data.columns[3:]])
+    # print("Scree: ", scree)
+    # print("Features: ", feats)
+    # print("Feat names: ", feat_names)
+    # print(feats.shape)
     top10_feats = feats[:10][:]
     top10_scree = scree[:10][:]
     top10_featnames = feat_names[:10][:]
-    std_data = std_data[top10_featnames]
-    biplot(std_data)
+    biplot(std_data[top10_featnames])
+    curr_data = std_data[std_data['Year']==2017][top10_featnames]
+    # print("Current data for countries: ")
+    # print(curr_data)
+    mds1 = getMDS(curr_data)
+    print("Finished setting up mds1")
+    print(mds1)
 
     # scaled[0] = data_scale
     # scaled[1] = random_scale

@@ -16,9 +16,9 @@ var map_features = ["GDP per Capita", "Life Expectancy"];
 var current_feature;
 
 function onLoad(data){
-  initialize(data)
+  initialize(data, mds_data)
 }
-function initialize(){
+function initialize(data, mds_data){
   // console.log("v1")
   // render_map_plot();
 
@@ -39,14 +39,14 @@ function initialize(){
 
 
   console.log("v2");
-  render_plot(data);
+  render_plot(data, mds_data);
 }
 
 
-function render_plot(data){
+function render_plot(data, mds_data){
 
   // d3.selectAll("svg > *").remove();
-  render_map_plot_v2(data);
+  render_map_plot_v2(data, mds_data);
 }
 
 
@@ -116,7 +116,7 @@ function render_scatter_plot(data){
 }
 
 
-function render_map_plot_v2(data){
+function render_map_plot_v2(data, mds_data){
   console.log("Called render map plot v2")
   var format = d3.format(",");
 
@@ -133,7 +133,9 @@ function render_map_plot_v2(data){
   var mapData = data
   console.log("MAP DATA")
   console.log(mapData)
-
+  console.log("MDS DATA")
+  console.log(mds_data)
+  console.log("Finish mds")
   var g = map_svg.append('g')
   .attr('class', 'map');
 
@@ -217,13 +219,16 @@ function render_map_plot_v2(data){
       var slidermax = document.getElementById("slider").max
       console.log("slider val: " + val)
 
-      current_year = minYear + Math.floor((maxYear-minYear)*(val-slidermin)/(slidermax - slidermin))
-
-      $.post("", {'function': "slider"}, function(data_infunc){
+      var current_year = minYear + Math.floor((maxYear-minYear)*(val-slidermin)/(slidermax - slidermin))
+      param = current_year.toString().concat("slider")
+      $.post("", {'function': param}, function(data_infunc){
         mapData = JSON.parse(data_infunc.chart_data);
         console.log("new data: ")
+        mds_data = JSON.parse(data_infunc.mds_data)
         console.log(mapData);
-        render_plot(mapData);
+        console.log(mds_data)
+        console.log("Finish new data")
+        render_plot(mapData, mds_data);
       });
     };
 
