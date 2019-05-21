@@ -24,8 +24,6 @@ function initialize(data, mds_data, sm_data){
 
   prepare_dropdown();
 
-  prepare_modal();
-
   map_svg = d3.select("#graph").append("svg:svg")
   map_svg.attr("id", "map_svg")
 
@@ -62,6 +60,8 @@ function render_plot(data, mds_data, sm_data){
   console.log("Finish sm")
   drawScatter(mds_data);
   drawScatterMatrix(sm_data);
+  drawBiPlot();
+  drawFeats()
 
 }
 
@@ -317,7 +317,7 @@ function render_map_plot_v2(data, mds_data){
     console.log("g bbox");
     console.log(g_bb);
 
-    map_g.attr("transform", "translate(" + (map_bb.x - g_bb.x) + "," + (map_bb.y - g_bb.y) + ")");
+    map_g.attr("transform", "translate(" + (map_bb.x - g_bb.x) + "," + (map_bb.y - g_bb.y - 30) + ")");
 
     console.log("Map plotted for " + current_year);
 
@@ -639,113 +639,79 @@ function drawScatterMatrix(data){
 
 function drawFeats() {
 
+  var CONTAINER_MARGIN = 100;
+
     // Get the data again
       // Request the "" page and send some additional data along (while still ignoring the return results).
     // $.post("", {'data': 'received'}, function(data_infunc){
       // console.log({data_infunc})
+  var con_width = document.getElementById('feat_chart').offsetWidth;
+  var con_height = document.getElementById('feat_chart').offsetHeight;
 
-      $.post("", {'function': 'feats'}, function(data_infunc){
-      data2 = JSON.parse(data_infunc.chart_data)
-      //console.log(data2);
+  $.post("", {'function': 'feats'}, function(data_infunc){
+    data2 = JSON.parse(data_infunc.chart_data)
+    //console.log(data2);
 
-      //console.log(data2);
-      // Scale the range of the data again
-      console.log(data2)
+    //console.log(data2);
+    // Scale the range of the data again
+    console.log(data2)
 
-      bar_svg.selectAll("*").remove();
+    feat_svg.selectAll("*").remove();
 
-      // bar_svg.attr("width", width + margin.left + margin.right)
-      //         .attr("height", height + margin.top + margin.bottom)
-      var xScale = d3.scaleBand()
-                .rangeRound([0, width])
-                .padding(0.1)
-                .domain(data2.map(function(d) {
-                  return d.feature;
-                }));
+    // bar_svg.attr("width", width + margin.left + margin.right)
+    //         .attr("height", height + margin.top + margin.bottom)
+    var xScale = d3.scaleBand()
+              .rangeRound([0, con_width-CONTAINER_MARGIN])
+              .padding(0.1)
+              .domain(data2.map(function(d) {
+                return d.feature;
+              }));
 
-       var  yScale = d3.scaleLinear()
-                    .rangeRound([height, 0])
-                    .domain([0, d3.max(data2, (function (d) {
-                      return d.value;
-                    }))]);
+     var  yScale = d3.scaleLinear()
+                  .rangeRound([con_height-CONTAINER_MARGIN/2, 0])
+                  .domain([0, d3.max(data2, (function (d) {
+                    return d.value;
+                  }))]);
 
-        var g = svg.append("g")
-                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                  //
-                  // g.append("text")
-                  //        .attr("x", (width / 2))
-                  //        .attr("y", 0 - (margin.top / 2))
-                  //        .attr("text-anchor", "middle")
-                  //        .style("font-size", "16px")
-                  //        .style("text-decoration", "underline")
-                  //        .text("Feature Importance - Top Three Features");
+      var g = feat_svg.append("g")
+                .attr("transform", "translate(" + (margin.left + CONTAINER_MARGIN/2) + "," + (margin.top + CONTAINER_MARGIN/4) + ")");
+                //
+                // g.append("text")
+                //        .attr("x", (width / 2))
+                //        .attr("y", 0 - (margin.top / 2))
+                //        .attr("text-anchor", "middle")
+                //        .style("font-size", "16px")
+                //        .style("text-decoration", "underline")
+                //        .text("Feature Importance - Top Three Features");
 
-        // axis-x
-        g.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(xScale).ticks(12))
-        // axis-y
-        g.append("g")
-            //.attr("class", "axis axis--y")
-            .call(d3.axisLeft(yScale));
+      // axis-x
+      g.append("g")
+          .attr("transform", "translate(0," + (con_height-CONTAINER_MARGIN/2) + ")")
+          .call(d3.axisBottom(xScale).ticks(12))
+      // axis-y
+      g.append("g")
+          //.attr("class", "axis axis--y")
+          .call(d3.axisLeft(yScale));
 
-        var bar = g.selectAll("rect")
-          .data(data2)
-          .enter().append("g");
+      var bar = g.selectAll("rect")
+        .data(data2)
+        .enter().append("g");
 
 
 
-        // bar chart
-        console.log(data2.length)
-        bar.append("rect")
-          .attr("x", function (d) { return xScale(d.feature); })
-          .attr("y", function(d) { return yScale(d.value); })
-          .attr("width", xScale.bandwidth())
-          .attr("height", function(d) { return height - yScale(d.value); })
-          .attr("fill",
-          function(d,i){
-            if (i<3){
-          return ("salmon");}
-          else{ return "steelblue"} });
+      // bar chart
+      console.log(data2.length)
+      bar.append("rect")
+        .attr("x", function (d) { return xScale(d.feature); })
+        .attr("y", function(d) { return yScale(d.value); })
+        .attr("width", xScale.bandwidth())
+        .attr("height", function(d) { return con_height-CONTAINER_MARGIN/2 - yScale(d.value); })
+        .attr("fill",
+        function(d,i){
+          if (i<3){
+        return ("salmon");}
+        else{ return "steelblue"} });
 
   })
 }
 
-
-function prepare_modal(){
-  // Get the modal
-  var modal = document.getElementById('myModal');
-
-  // Get the button that opens the modal
-  var pca_btn = document.getElementById("pca_button");
-  var sim_btn = document.getElementById("sim_button");
-
-  // Get the <span> element that closes the modal
-  // var span = document.getElementById("close");
-
-  // console.log(span)
-
-  // When the user clicks on the button, open the modal
-  pca_btn.onclick = function() {
-    console.log("PCA")
-    drawFeats()
-  }
-
-  sim_btn.onclick = function() {
-    console.log("Biplot")
-    drawBiPlot()
-  }
-
-
-  // When the user clicks on <span> (x), close the modal
-  // span.onclick = function() {
-  //   modal.style.display = "none";
-  // }
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
-}
