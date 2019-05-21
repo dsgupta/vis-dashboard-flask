@@ -6,13 +6,13 @@
 
 #line_svg {
   position: relative;
-  height: 220px;
+  height: 100%;
   width: 100%;
 }
 
 #bar_svg {
   position: relative;
-  height: 220px;
+  height: 100%;
   width: 100%;
 }
 
