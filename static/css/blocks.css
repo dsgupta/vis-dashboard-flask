@@ -1,6 +1,6 @@
 #map_svg {
   position: relative;
-  height: 435px;
+  height: 500px;
   width: 100%;
 }
 
@@ -34,6 +34,15 @@
   width: 100%;
 }
 
+#slider {
+  width: 35%;
+  float: left;
+}
+#dropdown {
+  margin-left: 3%;
+  width: 30%;
+  float: left;
+}
 #left-column {
     width: 60%;
     height: 550px;
