@@ -706,13 +706,13 @@ function drawFeats(feat_data) {
               }));
 
      var  yScale = d3.scaleLinear()
-                  .rangeRound([con_height-CONTAINER_MARGIN/2, 0])
+                  .rangeRound([con_height-CONTAINER_MARGIN, 0])
                   .domain([0, d3.max(data2, (function (d) {
                     return d.value;
                   }))]);
 
       var g = feat_svg.append("g")
-                .attr("transform", "translate(" + (margin.left + CONTAINER_MARGIN/2) + "," + (margin.top + CONTAINER_MARGIN/4) + ")");
+                .attr("transform", "translate(" + (margin.left + CONTAINER_MARGIN) + "," + (margin.top + 5) + ")");
                 //
                 // g.append("text")
                 //        .attr("x", (width / 2))
@@ -724,12 +724,12 @@ function drawFeats(feat_data) {
 
       // axis-x
       g.append("g")
-          .attr("transform", "translate(0," + (con_height-CONTAINER_MARGIN/2) + ")")
+          .attr("transform", "translate(0," + (con_height-CONTAINER_MARGIN) + ")")
           .call(d3.axisBottom(xScale).ticks(12))
 
            .selectAll("text")  
            .style("text-anchor", "end")
-           .attr("transform", "rotate(-35)");
+           .attr("transform", "rotate(-25)");
       // axis-y
       g.append("g")
           //.attr("class", "axis axis--y")
@@ -747,7 +747,7 @@ function drawFeats(feat_data) {
         .attr("x", function (d) { return xScale(d.feature); })
         .attr("y", function(d, i) { return yScale(d.value); })
         .attr("width", xScale.bandwidth())
-        .attr("height", function(d, i) { return con_height-CONTAINER_MARGIN/2 - yScale(d.value); })
+        .attr("height", function(d, i) { return con_height-CONTAINER_MARGIN - yScale(d.value); })
         .attr("fill",
         function(d,i){
           if (i<3){
