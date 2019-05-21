@@ -16,7 +16,7 @@ var map_features = ["GDP per Capita", "Life Expectancy"];
 var current_feature;
 
 
-function initialize(data, mds_data, sm_data){
+function initialize(data, mds_data, sm_data, bi_data, ax_data, feat_data){
   // console.log("v1")
   // render_map_plot();
 
@@ -44,11 +44,11 @@ function initialize(data, mds_data, sm_data){
 
 
   console.log("v2");
-  render_plot(data, mds_data, sm_data);
+  render_plot(data, mds_data, sm_data, bi_data, ax_data, feat_data);
 }
 
 
-function render_plot(data, mds_data, sm_data){
+function render_plot(data, mds_data, sm_data, bi_data, ax_data, feat_data){
 
   // d3.selectAll("svg > *").remove();
   render_map_plot_v2(data);
@@ -60,8 +60,8 @@ function render_plot(data, mds_data, sm_data){
   console.log("Finish sm")
   drawScatter(mds_data);
   drawScatterMatrix(sm_data);
-  drawBiPlot();
-  drawFeats()
+  drawBiPlot(bi_data, ax_data);
+  drawFeats(feat_data)
 
 }
 
@@ -241,10 +241,20 @@ function render_map_plot_v2(data, mds_data){
         mapData = JSON.parse(data_infunc.chart_data);
         console.log("new data: ")
         mds_data = JSON.parse(data_infunc.mds_data)
-        console.log(mapData);
+        sm_data = JSON.parse(data_infunc.sm_data);
+        console.log("new data: ")
         console.log(mds_data)
+        console.log(sm_data)
+        console.log(mapData)
+        bi_data = JSON.parse(data_infunc.bi_data)
+        ax_data = JSON.parse(data_infunc.ax_data);
+        console.log("new data: ")
+        feat_data = JSON.parse(data_infunc.feat_data)
+        console.log(bi_data)
+        console.log(ax_data)
+        console.log(feat_data)
         console.log("Finish new data")
-        render_plot(mapData, mds_data);
+        render_plot(mapData, mds_data, sm_data, bi_data, ax_data, feat_data);
       });
     };
 
@@ -421,11 +431,11 @@ function drawScatter(mds_data){
         .attr("cy", function(d) { return yScale(d.y) })
 }
 
-function drawBiPlot(){
-  $.post("", {'function': 'biplot'}, function(data_infunc){
-  dots = JSON.parse(data_infunc.chart_data)
+function drawBiPlot(bi_data, axes_data){
+
+  dots = bi_data
   console.log(dots)
-  vectors = JSON.parse(data_infunc.axes_data)
+  vectors = axes_data
 
   var con_width = document.getElementById('bi_chart').offsetWidth;
   var con_height = document.getElementById('bi_chart').offsetHeight;
@@ -534,7 +544,6 @@ function drawBiPlot(){
 //     .on('mouseout', tip2.hide)
 
 // svg.call(tip2);
-})
 }
 
 function drawScatterMatrix(data){
@@ -637,7 +646,7 @@ function drawScatterMatrix(data){
 }
 
 
-function drawFeats() {
+function drawFeats(feat_data) {
 
   var CONTAINER_MARGIN = 100;
 
@@ -648,8 +657,8 @@ function drawFeats() {
   var con_width = document.getElementById('feat_chart').offsetWidth;
   var con_height = document.getElementById('feat_chart').offsetHeight;
 
-  $.post("", {'function': 'feats'}, function(data_infunc){
-    data2 = JSON.parse(data_infunc.chart_data)
+
+    data2 = feat_data
     //console.log(data2);
 
     //console.log(data2);
@@ -712,6 +721,4 @@ function drawFeats() {
         return ("salmon");}
         else{ return "steelblue"} });
 
-  })
 }
-

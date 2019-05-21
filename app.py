@@ -123,27 +123,16 @@ def index():
             sm_data = curr_data.to_dict(orient='records')
             sm_data = json.dumps(sm_data, indent=2)
             # print("After jsoning: ", mds_data)
-            data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data}
-            return jsonify(data)
-        elif buttonVal == "feats":
-            chart_data = top10_feats.to_dict(orient='records')
-            print("CHART DATA AFTER TO DICT", chart_data)
-            chart_data = json.dumps(chart_data, indent=2)
-            data = {'chart_data': chart_data}
-            return jsonify(data)
-        elif buttonVal == "biplot":
-            # print("Projected Data after Button Click", projected_data)
-            chart_data = projected_data.to_dict(orient='records')
+            bi_data = projected_data.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
-            chart_data = json.dumps(chart_data, indent=2)
+            bi_data = json.dumps(bi_data, indent=2)
             axes_data = biplot_data.to_dict(orient='records')
             # print("AXES DATA AFTER TO DICT", axes_data)
             axes_data = json.dumps(axes_data, indent=2)
-            data = {'chart_data': chart_data, 'axes_data': axes_data}
+            feat_data = top10_feats.to_dict(orient='records')
+            feat_data = json.dumps(feat_data, indent=2)
+            data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data, 'bi_data': bi_data, 'axes_data': axes_data, 'feat_data':feat_data}
             return jsonify(data)
-
-
-
     else:
         # print(map_data)
         data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
