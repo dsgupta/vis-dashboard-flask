@@ -3,6 +3,17 @@
   height: 500px;
   width: 100%;
 }
+
+#left-column {
+    width: 60%;
+    height: 550px;
+    float: left;
+}
+#right-column {
+    margin-left: 61%;
+    height: 550px;
+}
+
 .bar {
   fill: steelblue;
 }
