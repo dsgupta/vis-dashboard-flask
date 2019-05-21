@@ -126,7 +126,7 @@ def index():
             data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data}
             return jsonify(data)
         elif buttonVal == "feats":
-            chart_data = top20_feats.to_dict(orient='records')
+            chart_data = top10_feats.to_dict(orient='records')
             print("CHART DATA AFTER TO DICT", chart_data)
             chart_data = json.dumps(chart_data, indent=2)
             data = {'chart_data': chart_data}

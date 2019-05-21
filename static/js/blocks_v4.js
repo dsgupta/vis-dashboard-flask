@@ -353,124 +353,6 @@ function prepare_dropdown() {
     });
 }
 
-function drawScree(value) {
-
-
-      var colorScale = d3.scaleOrdinal(d3.schemeCategory20b);
-      $.post("", {'function': value}, function(data_infunc){
-      data2 = JSON.parse(data_infunc.chart_data)
-
-      console.log(data2)
-
-
-      bar_svg.selectAll("*").remove();
-
-      // bar_svg.attr("width", width + margin.left + margin.right)
-      //         .attr("height", height + margin.top + margin.bottom)
-
-      var xScale = d3.scaleBand()
-                .rangeRound([0, width])
-                .padding(0.1)
-                .domain(data2.map(function(d) {
-                  return d.x;
-                }));
-
-       var  yScale = d3.scaleLinear()
-                    .rangeRound([height, 0])
-                    .domain([0, d3.max(data2, (function (d) {
-                      return d.y;
-                    }))]);
-
-        var g = bar_svg.append("g")
-                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-                  // g.append("text")
-                  //        .attr("x", (width / 2))
-                  //        .attr("y", 0 - (margin.top / 2))
-                  //        .attr("text-anchor", "middle")
-                  //        .style("font-size", "16px")
-                  //        .style("text-decoration", "underline")
-                  //        .text("Scree Plot - 12 PCA Components ");
-
-        // axis-x
-        g.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(xScale).ticks(12))
-
-        g.append("text")
-           .attr("x", width - 20)
-           .attr("y", height - 5)
-           .attr("text-anchor", "end")
-           .attr("stroke", "black")
-           .text("PCA");
-
-
-        // axis-y
-        g.append("g")
-            //.attr("class", "axis axis--y")
-            .call(d3.axisLeft(yScale));
-
-            g.append("text")
-               .attr("x", 10)
-               .attr("y", 20)
-               .attr("text-anchor", "end")
-               .attr("transform", "rotate(-90)")
-               .attr("stroke", "black")
-               .text("Variance");
-
-        var bar = g.selectAll("rect")
-          .data(data2)
-          .enter().append("g");
-
-
-
-        // bar chart
-
-        bar.append("rect")
-          .attr("x", function (d) { return xScale(d.x); })
-          .attr("y", function(d) { return yScale(d.y2); })
-          .attr("width", xScale.bandwidth())
-          .attr("height", function(d) { return height - yScale(d.y2); })
-          .attr("fill", function(d,i){return colorScale(i);});
-
-
-        // labels on the bar chart
-
-
-
-        // line chart
-        var line = d3.line()
-            .x(function(d, i) { return xScale(d.x) + xScale.bandwidth() / 2; })
-            .y(function(d) { return yScale(d.y); })
-            // .curve(d3.curveMonotoneX);
-
-        g.append("path")
-          .attr("class", "line") // Assign a class for styling
-          .attr("d", line(data2)); // 11. Calls the line generator
-
-        g.selectAll(".dot")
-            .data(data2)
-          .enter().append("circle") // Uses the enter().append() method
-            .attr("class", "dot") // Assign a class for styling
-            .attr("cx", function(d, i) { return xScale(d.x) + xScale.bandwidth() / 2; })
-            .attr("cy", function(d) { return yScale(d.y) })
-            .attr("r", 5)
-            .attr("fill", function(d, i){ if (i==4) return "red"});
-
-            g.append("line")
-              .attr("x1", function(d, i) { return xScale(5) + xScale.bandwidth() / 2 })
-              .attr("y1", 0)
-              .attr("x2", function(d, i) { return xScale(5) + xScale.bandwidth() / 2})
-              .attr("y2", height)
-              .style("stroke-width", 2)
-              .style("stroke", "red")
-              .style("fill", "none")
-
-
-
-    console.log(value)
-
-})}
 
 function drawScatter(mds_data){
 
@@ -544,6 +426,114 @@ function drawBiPlot(){
   dots = JSON.parse(data_infunc.chart_data)
   console.log(dots)
   vectors = JSON.parse(data_infunc.axes_data)
+
+  var con_width = document.getElementById('bi_chart').offsetWidth;
+  var con_height = document.getElementById('bi_chart').offsetHeight;
+      // Set ranges
+      bi_svg.selectAll("*").remove();
+
+      var xScale = d3.scaleLinear()
+                   .rangeRound([0, con_width-50])
+                   .domain([d3.min(dots, (function (d) {
+                     return d.PCA1;
+                   })), d3.max(dots, (function (d) {
+                     return d.PCA1;
+                   }))]);
+
+       var  yScale = d3.scaleLinear()
+                    .rangeRound([con_height-50, 0])
+                    .domain([d3.min(dots, (function (d) {
+                      return d.PCA2;
+                    })), d3.max(dots, (function (d) {
+                      return d.PCA2;
+                    }))]);
+
+        var g = bi_svg.append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+        g.attr("transform", "translate(" + 25 + "," + 25 + ")")
+        g.append("g")
+            .attr("transform", "translate(0," + yScale(0) + ")")
+            .call(d3.axisBottom(xScale))
+
+
+        // axis-y
+        g.append("g")
+            //.attr("class", "axis axis--y")
+            .attr("transform", "translate(" + xScale(0) + ",0)")
+            .call(d3.axisLeft(yScale));
+
+
+
+
+        g.selectAll(".dot")
+            .data(dots)
+          .enter().append("circle") // Uses the enter().append() method
+            .attr("class", "scatter") // Assign a class for styling
+            .attr("r", 2)
+            .attr("cx", function(d) { return xScale(d.PCA1); })
+            .attr("cy", function(d) { return yScale(d.PCA2) })
+
+      // var tip = d3.tip()
+      //   .attr('class', 'd3-tip')
+      //   .offset([-10, 0])
+      //   .html(function(d, i) {
+      //     return "<strong>Data point:</strong> <span style='color:#47ffb5'>" + i + "</span>";
+      // })
+
+      // circles.on('mouseover', tip.show)
+      //     .on('mouseout', tip.hide)
+      //
+      // svg.call(tip);
+      //
+      // var line = d3.line()
+      //   .x(function(d, i){return x(d[2]);})
+      //   .y(function(d, i){return y(d[3]);})
+
+      // var lines = svg.selectAll("line")
+      //   .data(vectors)
+      //   .enter().append("line")
+      //     .attr("class", "line")
+      //     .attr("x1", function(d) {
+      //       return d[0];
+      //     })
+      //     .attr("y1", function(d) {
+      //       return d[1];
+      //     })
+      //     .attr("x2", function(d) {
+      //       return d[2];
+      //     })
+      //     .attr("y2", function(d) {
+      //       return d[3];
+      //     })
+
+      // lines = svg.append("path")
+      //   .attr("d", function(d) { return line(vectors)})
+      //   .attr("transform", "translate(0,0)")
+      //   .style("stroke-width", 2)
+      //   .style("stroke", "steelblue")
+      //   .style("fill", "none")
+      //   .style("opacity", 0)
+      //   .text("hi");
+      //
+      // lines.transition()
+      //     .duration(700)
+      //     .delay(500)
+      //     .ease(d3.easeLinear)
+      //     .style("opacity", 1);
+
+// var tip2 = d3.tip()
+//   .attr('class', 'd3-tip')
+//   .offset([-10, 0])
+//   .html(function(d, i) {
+//     return "<strong>Vector:</strong> <span style='color:#47ffb5'>" + i + "</span>";
+// })
+
+// lines.on('mouseover', tip2.show)
+//     .on('mouseout', tip2.hide)
+
+// svg.call(tip2);
 })
 }
 
@@ -645,6 +635,7 @@ function drawScatterMatrix(data){
       }
 
 }
+
 
 function drawFeats() {
 
