@@ -444,13 +444,16 @@ function drawScree(value) {
 
 function drawScatter(mds_data){
 
+  var con_width = document.getElementById('bar_chart').offsetWidth;
+  var con_height = document.getElementById('bar_chart').offsetHeight;
 
+  console.log("MDS Data:")
   console.log(mds_data)
 
   bar_svg.selectAll("*").remove();
 
   var xScale = d3.scaleLinear()
-               .rangeRound([0, width])
+               .rangeRound([0, con_width-50])
                .domain([d3.min(mds_data, (function (d) {
                  return d.x;
                })), d3.max(mds_data, (function (d) {
@@ -458,7 +461,7 @@ function drawScatter(mds_data){
                }))]);
 
    var  yScale = d3.scaleLinear()
-                .rangeRound([height, 0])
+                .rangeRound([con_height-50, 0])
                 .domain([d3.min(mds_data, (function (d) {
                   return d.y;
                 })), d3.max(mds_data, (function (d) {
@@ -481,6 +484,8 @@ function drawScatter(mds_data){
               //        .text("Scatter Plot - Projection on 2 PCA");
 
     // axis-x
+
+    g.attr("transform", "translate(" + 25 + "," + 25 + ")")
     g.append("g")
         .attr("transform", "translate(0," + yScale(0) + ")")
         .call(d3.axisBottom(xScale))
@@ -499,6 +504,7 @@ function drawScatter(mds_data){
         .data(mds_data)
       .enter().append("circle") // Uses the enter().append() method
         .attr("class", "scatter") // Assign a class for styling
+        .attr("r", 2)
         .attr("cx", function(d) { return xScale(d.x); })
         .attr("cy", function(d) { return yScale(d.y) })
 }
