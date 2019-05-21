@@ -21,6 +21,7 @@ top10_feats = None
 top10_scree = None
 top10_featnames = None
 biplot_data = None
+projected_data = None
 projected = [[]]*3
 mds1 = [[]]*3
 mds2 = [[]]*3
@@ -105,17 +106,12 @@ def scatterType(button):
 def index():
     #df = pd.read_csv('data.csv').drop('Open', axis=1)
     print("INDEX!")
-    global scaled
-    global feats
-    global scree
-    global projected
+
 
     #The current request method is available by using the method attribute
     if request.method == 'POST':
-        pass
-        # if request.form['data'] == 'received':
-        # data = df[['date','open']]
-        #print("POST!")
+        print(projected_data)
+
         buttonVal =  request.form.get('function')
         # chart_data = None
         # #print("BUTTON VAL: ", buttonVal)
@@ -147,6 +143,17 @@ def index():
             chart_data = json.dumps(chart_data, indent=2)
             data = {'chart_data': chart_data}
             return jsonify(data)
+        elif buttonVal == "biplot":
+            print("Projected Data after Button Click", projected_data)
+            chart_data = projected_data.to_dict(orient='records')
+            print("CHART DATA AFTER TO DICT", chart_data)
+            chart_data = json.dumps(chart_data, indent=2)
+            axes_data = biplot_data.to_dict(orient='records')
+            print("AXES DATA AFTER TO DICT", axes_data)
+            axes_data = json.dumps(axes_data, indent=2)
+            data = {'chart_data': chart_data, 'axes_data': axes_data}
+            return jsonify(data)
+
 
 
     else:
@@ -162,9 +169,11 @@ def index():
     ###
 def biplot(data):
     # print("Got the data", data)
+    global projected_data
+    global biplot_data
     pca = PCA()
-    projected = pca.fit_transform(data)
-    score = projected[:,0:2]
+    score = pca.fit_transform(data)[:,0:2]
+    projected_data = pd.DataFrame(data=score, columns=['PCA1', 'PCA2'])
     coeff = np.transpose(pca.components_[0:2,:])
     xs = score[:,0]
     ys = score[:,1]

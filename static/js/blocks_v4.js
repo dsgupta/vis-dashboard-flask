@@ -433,6 +433,14 @@ function drawScree(value) {
 
 })}
 
+function drawBiPlot(){
+  $.post("", {'function': 'biplot'}, function(data_infunc){
+  dots = JSON.parse(data_infunc.chart_data)
+  console.log(dots)
+  vectors = JSON.parse(data_infunc.axes_data)
+})
+}
+
 function drawFeats() {
 
     // Get the data again
@@ -528,8 +536,8 @@ function prepare_modal(){
   }
 
   sim_btn.onclick = function() {
-    console.log("Similarity")
-    modal.style.display = "block";
+    console.log("Biplot")
+    drawBiPlot()
   }
 
 
