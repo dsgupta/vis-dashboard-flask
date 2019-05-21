@@ -29,20 +29,20 @@ function initialize(data, mds_data, sm_data){
   map_svg = d3.select("#graph").append("svg:svg")
   map_svg.attr("id", "map_svg")
 
-  bar_svg = d3.select("#bar_chart").append("svg:svg")
-  bar_svg.attr("id", "bar_svg")
-
   line_svg = d3.select("#line_chart").append("svg:svg")
   line_svg.attr("id", "line_svg")
 
-  feat_svg = d3.select("#feat_chart").append("svg:svg")
-  feat_svg.attr("id", "feat_svg")
+  bar_svg = d3.select("#bar_chart").append("svg:svg")
+  bar_svg.attr("id", "bar_svg")
 
   sm_svg = d3.select("#sm_chart").append("svg:svg")
   sm_svg.attr("id", "sm_svg")
 
   bi_svg = d3.select("#bi_chart").append("svg:svg")
   bi_svg.attr("id", "bi_svg")
+
+  feat_svg = d3.select("#feat_chart").append("svg:svg")
+  feat_svg.attr("id", "feat_svg")
 
 
   console.log("v2");
@@ -551,15 +551,18 @@ function drawScatterMatrix(data){
 
   console.log(data)
 
+  var con_width = document.getElementById('sm_chart').offsetWidth;
+  var con_height = document.getElementById('sm_chart').offsetHeight;
+
     var width =  950 - margin.left - margin.right,
       size = 150,
       padding = 20;
 
     var x = d3.scaleLinear()
-        .range([padding / 2, size - padding / 2]);
+        .range([padding / 2, con_width/2 - padding / 2]);
 
     var y = d3.scaleLinear()
-        .range([size - padding / 2, padding / 2]);
+        .range([con_height/2 - padding / 2, padding / 2]);
 
     var xAxis = d3.axisBottom()
         .scale(x)
@@ -576,35 +579,34 @@ function drawScatterMatrix(data){
     domainByTrait[trait] = d3.extent(data, function(d) { return d[trait]; });
   });
 
-  xAxis.tickSize(size * n);
-  yAxis.tickSize(-size * n);
+  xAxis.tickSize(con_width/2 * n);
+  yAxis.tickSize(-con_height/2 * n);
 
 
-  var svg = d3.select("svg")
-      .attr("width", size * n + padding)
-      .attr("height", size * n + padding)
+  sm_svg.attr("width", con_width * n)
+      .attr("height", con_height * n)
     .append("g")
       .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
 
-  svg.selectAll(".x.axis")
+  sm_svg.selectAll(".x.axis")
       .data(traits)
     .enter().append("g")
       .attr("class", "x axis")
-      .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
+      .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * con_width/2 + ",0)"; })
       .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
 
-  svg.selectAll(".y.axis")
+  sm_svg.selectAll(".y.axis")
       .data(traits)
     .enter().append("g")
       .attr("class", "y axis")
-      .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
+      .attr("transform", function(d, i) { return "translate(0," + i * con_height/2 + ")"; })
       .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
 
-  var cell = svg.selectAll(".cell")
+  var cell = sm_svg.selectAll(".cell")
       .data(cross(traits, traits))
     .enter().append("g")
       .attr("class", "cell")
-      .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; })
+      .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * con_width/2 + "," + d.j * con_height/2 + ")"; })
       .each(plot);
 
   // Titles for the diagonal.
@@ -624,16 +626,16 @@ function drawScatterMatrix(data){
             .attr("class", "frame")
             .attr("x", padding / 2)
             .attr("y", padding / 2)
-            .attr("width", size - padding)
-            .attr("height", size - padding);
+            .attr("width", con_width/2 - padding)
+            .attr("height", con_height/2 - padding);
 
         cell.selectAll("circle")
             .data(data)
           .enter().append("circle")
             .attr("cx", function(d) { return x(d[p.x]); })
             .attr("cy", function(d) { return y(d[p.y]); })
-            .attr("r", 4)
-            .style("fill", function(d) { return "#71338e"; });
+            .attr("r", 2)
+            .style("fill", function(d) { return "#4682b4"; });
       }
 
       function cross(a, b) {

@@ -16,6 +16,24 @@
   width: 100%;
 }
 
+#sm_svg {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#bi_svg {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#feat_svg {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
 #left-column {
     width: 60%;
     height: 550px;
@@ -25,6 +43,26 @@
     margin-left: 61%;
     height: 550px;
 }
+
+#column-one {
+    width: 33%;
+    height: 400px;
+    float: left;
+}
+#column-two {
+    margin-left: 0.5%;
+    width: 33%;
+    height: 400px;
+    float: left;
+}
+
+#column-three {
+    margin-left: 0.5%;
+    width: 33%;
+    height: 400px;
+    float: left;
+}
+
 
 .scatter {
   
