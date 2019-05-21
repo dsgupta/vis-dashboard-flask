@@ -68,11 +68,14 @@ function render_scatter_plot(data){
   console.log("NEW!")
   console.log(time_data)
 
+  var con_width = document.getElementById('line_chart').offsetWidth;
+  var con_height = document.getElementById('line_chart').offsetHeight;
 
-    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
-    y = d3.scaleLinear().rangeRound([height, 0]);
-    var g = line_svg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var x = d3.scaleBand().rangeRound([0, con_width]).padding(0.1),
+  y = d3.scaleLinear().rangeRound([con_height, 0]);
+  var g = line_svg.append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
   var line = d3.line()
@@ -84,7 +87,7 @@ function render_scatter_plot(data){
   y.domain([0, d3.max(time_data, function(d) { return d.y; })]);
   g.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + con_height + ")")
       .call(d3.axisBottom(x));
 
   g.append("g")
@@ -326,8 +329,8 @@ function drawScree(value) {
 
       bar_svg.selectAll("*").remove();
 
-      bar_svg.attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
+      // bar_svg.attr("width", width + margin.left + margin.right)
+      //         .attr("height", height + margin.top + margin.bottom)
 
       var xScale = d3.scaleBand()
                 .rangeRound([0, width])
@@ -450,8 +453,8 @@ function drawFeats() {
 
       bar_svg.selectAll("*").remove();
 
-      bar_svg.attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
+      // bar_svg.attr("width", width + margin.left + margin.right)
+      //         .attr("height", height + margin.top + margin.bottom)
       var xScale = d3.scaleBand()
                 .rangeRound([0, width])
                 .padding(0.1)
