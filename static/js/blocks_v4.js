@@ -9,7 +9,7 @@ var current_year = '2017'
 var minYear = 2500;
 var maxYear = 1500;
 
-var svg;
+var map_svg, bar_svg, line_svg;
 
 
 var map_features = ["GDP per Capita", "Life Expectancy"];
@@ -28,9 +28,8 @@ function initialize(){
 
   prepare_modal();
 
-  svg = d3.select("svg")
-            .attr("width", width)
-            .attr("height", height)
+  map_svg = d3.select("#graph").append("svg:svg")
+  map_svg.attr("id", "map_svg")
 
 
   console.log("v2");
@@ -49,7 +48,7 @@ function render_scatter_plot(data){
   // parse the date / time
   console.log("Data for line chart!")
   console.log(data)
-  d3.select("svg").selectAll("*").remove();
+  line_svg.selectAll("*").remove();
   // set the ranges
   var string_data = d3.entries(data);
   console.log(string_data)
@@ -66,7 +65,7 @@ function render_scatter_plot(data){
 
     var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
     y = d3.scaleLinear().rangeRound([height, 0]);
-    var g = svg.append("g")
+    var g = line_svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
@@ -126,7 +125,7 @@ function render_map_plot_v2(data){
   console.log("MAP DATA")
   console.log(mapData)
 
-  var g = svg.append('g')
+  var g = map_svg.append('g')
   .attr('class', 'map');
 
   // var tip = d3.tip()
@@ -228,8 +227,8 @@ function render_map_plot_v2(data){
 
     console.log("Time series Data")
     console.log(timeSeries)
-    svg.selectAll("g").remove();
-    svg.append("g")
+    map_svg.selectAll("g").remove();
+    map_svg.append("g")
       .attr("class", "countries")
       .selectAll("path")
         .data(country_features.features)
@@ -269,7 +268,7 @@ function render_map_plot_v2(data){
             render_scatter_plot(timeSeries[d.id]);
           })
 
-    svg.append("path")
+    map_svg.append("path")
         .datum(topojson.mesh(country_features.features, function(a, b) { return a.id !== b.id; }))
          // .datum(topojson.mesh(data.features, function(a, b) { return a !== b; }))
         .attr("class", "names")
@@ -319,9 +318,9 @@ function drawScree(value) {
       console.log(data2)
 
 
-      d3.select("svg").selectAll("*").remove();
+      bar_svg.selectAll("*").remove();
 
-      var svg = d3.select("svg")
+      bar_svg = d3.select("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
 
@@ -338,7 +337,7 @@ function drawScree(value) {
                       return d.y;
                     }))]);
 
-        var g = svg.append("g")
+        var g = bar_svg.append("g")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                   // g.append("text")
@@ -444,9 +443,9 @@ function drawFeats() {
       // Scale the range of the data again
       console.log(data2)
 
-      d3.select("svg").selectAll("*").remove();
+      bar_svg.selectAll("*").remove();
 
-      var svg = d3.select("svg")
+      bar_svg = d3.select("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
       var xScale = d3.scaleBand()
