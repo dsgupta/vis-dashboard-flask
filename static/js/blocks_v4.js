@@ -9,6 +9,19 @@ var current_year = '2017'
 var minYear = 2500;
 var maxYear = 1500;
 
+var data_columns = ["GDP per capita (current LCU)", 
+                    "Exports of goods and services (% of GDP)",
+                    "Health expenditure, public (% of GDP)",
+                    "Immunization, BCG (% of one-year-old children)",
+                    "Improved sanitation facilities (% of population with access)",
+                    "Life expectancy at birth, total (years)",
+                    "Literacy rate, adult total (% of people ages 15 and above)",
+                    "Mortality rate, infant (per 1,000 live births)",
+                    "Population, total",
+                    "School enrollment, primary (% gross)",
+                    "Unemployment, total (% of total labor force)",
+                    "Urban population (% of total)"]
+
 var map_svg, bar_svg, line_svg, feat_svg, bi_svg, sm_svg;
 
 
