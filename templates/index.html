@@ -52,22 +52,6 @@
 
     <a class="navbar-brand mr-1" href="index.html"><img src="../static/assets/logo_new.png" width="200" height="80"></a>
 
-    <a class="nav-link">
-      <input id="slider" type='range' min="1" max="100" value="1">
-    </a>
-
-    <a class="nav-link">
-      <div id="dropdown"></div>
-    </a>
-
-    <a class="nav-link">
-      <button id="sim_button">Similarity Plot</button>
-    </a>
-
-    <a class="nav-link">
-      <button id="pca_button">PCA Plot</button>
-    </a>
-
   </nav>
 
   <div id="wrapper">
@@ -78,12 +62,18 @@
 
         <section class="container">
 
-          <div id="left-column" class="card mb-3" width="50%">
-            <div class="card-header">
-              <i class="fas fa-chart-area"></i>
-              World Map</div>
-            <div id="graph" class="card-body">
-              <!-- <svg id="map_svg"></svg> -->
+          <div id="left-column" width="50%">
+            <ol class="breadcrumb">
+              <input id="slider" type='range' min="1" max="100" value="1" width=80%>
+              <div id="dropdown"></div>
+            </ol>
+            <div class="card mb-3">
+              <div class="card-header">
+                <i class="fas fa-chart-area"></i>
+                World Map</div>
+              <div id="graph" class="card-body">
+                <!-- <svg id="map_svg"></svg> -->
+              </div>
             </div>
           </div>
 
