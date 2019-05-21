@@ -72,27 +72,28 @@ function render_scatter_plot(data){
   var con_height = document.getElementById('line_chart').offsetHeight;
 
 
-  var x = d3.scaleBand().rangeRound([0, con_width]).padding(0.1),
-  y = d3.scaleLinear().rangeRound([con_height, 0]);
+  var x = d3.scaleBand().rangeRound([0, con_width-50]).padding(0.1),
+  y = d3.scaleLinear().rangeRound([con_height-50, 0]);
   var g = line_svg.append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
 
   var line = d3.line()
     .x(function(d) { return x(d.x); })
     .y(function(d) { return y(d.y); })
 
+
   x.domain(time_data.map(function(d) { return d.x; }));
 
   y.domain([0, d3.max(time_data, function(d) { return d.y; })]);
   g.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + con_height + ")")
+      .attr("transform", "translate(0," + (con_height-50) + ")")
       .call(d3.axisBottom(x));
 
   g.append("g")
       .attr("class", "axis axis--y")
-      .call(d3.axisLeft(y).ticks(10, "%"))
+      .call(d3.axisLeft(y).ticks(10))
     .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)

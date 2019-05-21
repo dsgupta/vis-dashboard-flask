@@ -6,13 +6,13 @@
 
 #line_svg {
   position: relative;
-  height: 200px;
+  height: 220px;
   width: 100%;
 }
 
 #bar_svg {
   position: relative;
-  height: 200px;
+  height: 220px;
   width: 100%;
 }
 
@@ -31,9 +31,6 @@
 }
 .bar:hover {
   fill: brown;
-}
-.axis--x path {
-  display: none;
 }
 .line {
   fill: none;
