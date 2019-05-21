@@ -120,8 +120,10 @@ def index():
             curr_mds = getMDS(curr_data)
             mds_data = curr_mds.to_dict(orient='records')
             mds_data = json.dumps(mds_data, indent=2)
+            sm_data = curr_data.to_dict(orient='records')
+            sm_data = json.dumps(sm_data, indent=2)
             # print("After jsoning: ", mds_data)
-            data = {'chart_data': chart_data, 'mds_data':mds_data}
+            data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data}
             return jsonify(data)
         elif buttonVal == "feats":
             chart_data = top20_feats.to_dict(orient='records')
@@ -152,7 +154,11 @@ def index():
         # print("CHART DATA AFTER TO DICT", chart_data)
         mds_data = json.dumps(mds_data, indent=2)
         # print("After jsoning: ", mds_data)
-        data = {'chart_data': chart_data, 'mds_data':mds_data}
+        curr_data = std_data[std_data['Year']==2017][top10_featnames]
+        sm_data = curr_data.to_dict(orient='records')
+        sm_data = json.dumps(sm_data, indent=2)
+        # print("After jsoning: ", mds_data)
+        data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data}
         return render_template("index.html", data=data)
 
 # @app.route("/member", methods = ['POST', 'GET'])
