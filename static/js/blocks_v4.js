@@ -9,16 +9,14 @@ var current_year = '2017'
 var minYear = 2500;
 var maxYear = 1500;
 
-var map_svg, bar_svg, line_svg, feat_svg, sm_svg;
+var map_svg, bar_svg, line_svg, feat_svg, bi_svg, sm_svg;
 
 
 var map_features = ["GDP per Capita", "Life Expectancy"];
 var current_feature;
 
-function onLoad(data){
-  initialize(data, mds_data)
-}
-function initialize(data, mds_data){
+
+function initialize(data, mds_data, sm_data){
   // console.log("v1")
   // render_map_plot();
 
@@ -37,16 +35,34 @@ function initialize(data, mds_data){
   line_svg = d3.select("#line_chart").append("svg:svg")
   line_svg.attr("id", "line_svg")
 
+  feat_svg = d3.select("#feat_chart").append("svg:svg")
+  feat_svg.attr("id", "feat_svg")
+
+  sm_svg = d3.select("#sm_chart").append("svg:svg")
+  sm_svg.attr("id", "sm_svg")
+
+  bi_svg = d3.select("#bi_chart").append("svg:svg")
+  bi_svg.attr("id", "bi_svg")
+
 
   console.log("v2");
-  render_plot(data, mds_data);
+  render_plot(data, mds_data, sm_data);
 }
 
 
-function render_plot(data, mds_data){
+function render_plot(data, mds_data, sm_data){
 
   // d3.selectAll("svg > *").remove();
-  render_map_plot_v2(data, mds_data);
+  render_map_plot_v2(data);
+  console.log("MDS DATA")
+  console.log(mds_data)
+  console.log("Finish mds")
+  console.log("Scatter Matrix DATA")
+  console.log(sm_data)
+  console.log("Finish sm")
+  drawScatter(mds_data);
+  drawScatterMatrix(sm_data);
+
 }
 
 
@@ -135,9 +151,7 @@ function render_map_plot_v2(data, mds_data){
   var mapData = data
   console.log("MAP DATA")
   console.log(mapData)
-  console.log("MDS DATA")
-  console.log(mds_data)
-  console.log("Finish mds")
+
   var g = map_svg.append('g')
   .attr('class', 'map');
 
@@ -306,7 +320,7 @@ function render_map_plot_v2(data, mds_data){
     map_g.attr("transform", "translate(" + (map_bb.x - g_bb.x) + "," + (map_bb.y - g_bb.y) + ")");
 
     console.log("Map plotted for " + current_year);
-    drawScatter(mds_data)
+
   }
 }
 
@@ -533,14 +547,8 @@ function drawBiPlot(){
 })
 }
 
-function drawScatterMatrix(value){
-  console.log(value)
-  $.post("", {'function': value}, function(data_infunc){
-  data = JSON.parse(data_infunc.chart_data)
-  //console.log(data2);
+function drawScatterMatrix(data){
 
-  //console.log(data2);
-  // Scale the range of the data again
   console.log(data)
 
     var width =  950 - margin.left - margin.right,
@@ -559,7 +567,7 @@ function drawScatterMatrix(value){
       var yAxis = d3.axisLeft()
       .scale(y)
       .ticks(6);
-  d3.select("svg").selectAll("*").remove();
+  sm_svg.selectAll("*").remove();
   var domainByTrait = {},
       traits = d3.keys(data[0]),
       n = traits.length;
@@ -634,7 +642,6 @@ function drawScatterMatrix(value){
         return c;
       }
 
-})
 }
 
 function drawFeats() {
