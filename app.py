@@ -14,16 +14,16 @@ from sklearn.manifold import MDS
 #First of all you have to import it from the flask module:
 app = Flask(__name__)
 
-scaled = [[]]*3
-feats = [[]]*3
-scree = [[]]*3
+scree = None
+feats = None
+feat_names = None
 projected = [[]]*3
 mds1 = [[]]*3
 mds2 = [[]]*3
 feat_names = [[]]*3
 loaded = [[]]*3
 
-default = None
+map_data = None
 
 def getScree(data):
 
@@ -114,7 +114,7 @@ def index():
     global feats
     global scree
     global projected
-    global elbow
+
     #The current request method is available by using the method attribute
     if request.method == 'POST':
         pass
@@ -140,7 +140,7 @@ def index():
         # print(jsonify(data))
         # return jsonify(data) # Should be a json string
         if buttonVal == "slider":
-            data = default
+            data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
             chart_data = data.to_dict(orient='records')
             print("CHART DATA AFTER TO DICT", chart_data)
             chart_data = json.dumps(chart_data, indent=2)
@@ -149,7 +149,7 @@ def index():
 
 
     else:
-        data = default
+        data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
         chart_data = data.to_dict(orient='records')
         # print("CHART DATA AFTER TO DICT", chart_data)
         chart_data = json.dumps(chart_data, indent=2)
@@ -166,13 +166,13 @@ def getData():
     cols = data.columns
     std = data.copy()
     std[cols[3:]] = StandardScaler().fit_transform(std[cols[3:]])
-    return data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']], std
+    return data, std
 
 if __name__ == "__main__":
 
     # data_scale, random_scale, strat_scale, elbow = getData()
-    default, std = getData()
-    scree, feats, feat_names= getScree(std)
+    map_data, std_data = getData()
+    scree, feats, feat_names= getScree(std_data)
     print("Scree: ", scree)
     print("Features: ", feats)
     print("Feat names: ", feat_names)
