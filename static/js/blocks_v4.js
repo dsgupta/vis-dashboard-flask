@@ -226,7 +226,6 @@ function render_map_plot_v2(data, mds_data){
           timeSeries[d['Code']] = {};
 
           timeSeries[d['Code']][d['Year']] = d[data_column];
-
         });
 
 
@@ -248,27 +247,10 @@ function render_map_plot_v2(data, mds_data){
       var slidermax = document.getElementById("slider").max
       console.log("slider val: " + val)
 
-      var current_year = minYear + Math.floor((maxYear-minYear)*(val-slidermin)/(slidermax - slidermin))
-      param = current_year.toString().concat("slider")
-      $.post("", {'function': param}, function(data_infunc){
-        mapData = JSON.parse(data_infunc.chart_data);
-        console.log("new data: ")
-        mds_data = JSON.parse(data_infunc.mds_data)
-        sm_data = JSON.parse(data_infunc.sm_data);
-        console.log("new data: ")
-        console.log(mds_data)
-        console.log(sm_data)
-        console.log(mapData)
-        bi_data = JSON.parse(data_infunc.bi_data)
-        // ax_data = JSON.parse(data_infunc.ax_data);
-        console.log("new data: ")
-        feat_data = JSON.parse(data_infunc.feat_data)
-        console.log(bi_data)
-        // console.log(ax_data)
-        console.log(feat_data)
-        console.log("Finish new data")
-        render_plot(mapData, mds_data, sm_data, bi_data, feat_data);
-      });
+      current_year = minYear + Math.floor((maxYear-minYear)*(val-slidermin)/(slidermax - slidermin))
+      console.log(current_year);
+      param = current_year.toString().concat("slider");
+      render_plot(mapData, mds_data, sm_data, bi_data, feat_data);  
     };
 
     var color = d3.scaleLinear()
