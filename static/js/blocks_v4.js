@@ -153,7 +153,7 @@ function render_map_plot_v2(data, mds_data){
 
 
   var projection = d3.geoMercator()
-                     .scale(130)
+                     .scale(120)
                     .translate( [width / 2, height / 1.5]);
 
   var path = d3.geoPath().projection(projection);
@@ -245,6 +245,7 @@ function render_map_plot_v2(data, mds_data){
     console.log(timeSeries)
     map_svg.selectAll("g").remove();
     map_svg.append("g")
+      .attr("id", "map_group")
       .attr("class", "countries")
       .selectAll("path")
         .data(country_features.features)
@@ -289,6 +290,20 @@ function render_map_plot_v2(data, mds_data){
          // .datum(topojson.mesh(data.features, function(a, b) { return a !== b; }))
         .attr("class", "names")
         .attr("d", path);
+
+
+
+
+    var map_bb = document.getElementById("graph").getBoundingClientRect();
+    console.log("bbox");
+    console.log(map_bb);
+
+    var map_g = map_svg.select("g");
+    var g_bb = document.getElementById("map_group").getBoundingClientRect();
+    console.log("g bbox");
+    console.log(g_bb);
+
+    map_g.attr("transform", "translate(" + (map_bb.x - g_bb.x) + "," + (map_bb.y - g_bb.y) + ")");
 
     console.log("Map plotted for " + current_year);
     drawScatter(mds_data)
@@ -445,13 +460,16 @@ function drawScree(value) {
 
 function drawScatter(mds_data){
 
+  var con_width = document.getElementById('bar_chart').offsetWidth;
+  var con_height = document.getElementById('bar_chart').offsetHeight;
 
+  console.log("MDS Data:")
   console.log(mds_data)
 
   bar_svg.selectAll("*").remove();
 
   var xScale = d3.scaleLinear()
-               .rangeRound([0, width])
+               .rangeRound([0, con_width-50])
                .domain([d3.min(mds_data, (function (d) {
                  return d.x;
                })), d3.max(mds_data, (function (d) {
@@ -459,7 +477,7 @@ function drawScatter(mds_data){
                }))]);
 
    var  yScale = d3.scaleLinear()
-                .rangeRound([height, 0])
+                .rangeRound([con_height-50, 0])
                 .domain([d3.min(mds_data, (function (d) {
                   return d.y;
                 })), d3.max(mds_data, (function (d) {
@@ -482,6 +500,8 @@ function drawScatter(mds_data){
               //        .text("Scatter Plot - Projection on 2 PCA");
 
     // axis-x
+
+    g.attr("transform", "translate(" + 25 + "," + 25 + ")")
     g.append("g")
         .attr("transform", "translate(0," + yScale(0) + ")")
         .call(d3.axisBottom(xScale))
@@ -500,6 +520,7 @@ function drawScatter(mds_data){
         .data(mds_data)
       .enter().append("circle") // Uses the enter().append() method
         .attr("class", "scatter") // Assign a class for styling
+        .attr("r", 2)
         .attr("cx", function(d) { return xScale(d.x); })
         .attr("cy", function(d) { return yScale(d.y) })
 }

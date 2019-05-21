@@ -26,6 +26,12 @@
     height: 550px;
 }
 
+.scatter {
+  
+    fill-opacity: .8;
+    fill: steelblue;
+}
+
 .bar {
   fill: steelblue;
 }
