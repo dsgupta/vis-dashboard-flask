@@ -17,6 +17,9 @@ app = Flask(__name__)
 scree = None
 feats = None
 feat_names = None
+top20_feats = None
+top20_scree = None
+top20_featnames = None
 projected = [[]]*3
 mds1 = [[]]*3
 mds2 = [[]]*3
@@ -45,8 +48,8 @@ def getScree(data):
     feature_imp.sort(reverse=True)
     feature_values = pd.DataFrame({"feature":features, "value":feature_imp})
     print("Computed scree!", scree)
-    top_feats = features[:3]
-    return (scree, feature_values, top_feats)
+    feat_names = features
+    return (scree, feature_values, feat_names)
 
     feature_imp = getMaxPCALoadings(5,pca)
     features = []
@@ -146,6 +149,12 @@ def index():
             chart_data = json.dumps(chart_data, indent=2)
             data = {'chart_data': chart_data}
             return jsonify(data)
+        elif buttonVal == "feats":
+            chart_data = top20_feats.to_dict(orient='records')
+            print("CHART DATA AFTER TO DICT", chart_data)
+            chart_data = json.dumps(chart_data, indent=2)
+            data = {'chart_data': chart_data}
+            return jsonify(data)
 
 
     else:
@@ -176,6 +185,10 @@ if __name__ == "__main__":
     print("Scree: ", scree)
     print("Features: ", feats)
     print("Feat names: ", feat_names)
+    print(feats.shape)
+    top20_feats = feats[:20][:]
+    top20_scree = scree[:20][:]
+    top20_featnames = feat_names[:20][:]
     # scaled[0] = data_scale
     # scaled[1] = random_scale
     # scaled[2] = strat_scale

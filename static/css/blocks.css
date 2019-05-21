@@ -2,6 +2,23 @@
   position: relative;
   height: 500px;
 }
+.bar {
+  fill: steelblue;
+}
+.bar:hover {
+  fill: brown;
+}
+.axis--x path {
+  display: none;
+}
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+.circle {
+  fill: steelblue;
+}
 
 .names {
   fill: none;
@@ -22,7 +39,7 @@
     }
 
     /* Creates a small triangle extender for the tooltip */
-    .d3-tip:after {      
+    .d3-tip:after {
       box-sizing: border-box;
       display: inline;
       font-size: 8px;
@@ -31,7 +48,7 @@
       color: rgba(0, 0, 0, 0.6);
       position: absolute;
       pointer-events: none;
-      
+
     }
 
     /* Northward tooltips */

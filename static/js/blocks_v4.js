@@ -29,8 +29,8 @@ function initialize(){
   prepare_modal();
 
   svg = d3.select("svg")
-            // .attr("width", width)
-            // .attr("height", height)
+            .attr("width", width)
+            .attr("height", height)
 
 
   console.log("v2");
@@ -63,66 +63,47 @@ function render_scatter_plot(data){
   console.log("NEW!")
   console.log(time_data)
 
-  var xScale = d3.scaleLinear()
-               .rangeRound([0, width])
-               .domain([0, d3.max(time_data, (function (d) {
-                 return d.x;
-               }))]);
-   var  yScale = d3.scaleLinear()
-                .rangeRound([height, 0])
-                .domain([0, d3.max(time_data, (function (d) {
-                  return d.y;
-                }))]);
 
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+    y = d3.scaleLinear().rangeRound([height, 0]);
     var g = svg.append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    g.append("text")
-     .attr("x", (width / 2))
-     .attr("y", 0 - (margin.top / 2))
-     .attr("text-anchor", "middle")
-     .style("font-size", "16px")
-     .style("text-decoration", "underline")
-     .text("Time Series Plot");
 
-    // axis-x
-    g.append("g")
+  var line = d3.line()
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); })
+
+  x.domain(time_data.map(function(d) { return d.x; }));
+
+  y.domain([0, d3.max(time_data, function(d) { return d.y; })]);
+  g.append("g")
+      .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(xScale).ticks(d3.max(time_data, (function (d) {
-        return d.y;
-      }))))
+      .call(d3.axisBottom(x));
 
-      .append("text")
-      .attr("y", height)
-      .attr("x", 10)
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3.axisLeft(y).ticks(10, "%"))
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
       .attr("text-anchor", "end")
-      .attr("stroke", "black")
-      .text("K values");
+      .text("Frequency");
 
-    // axis-y
-    g.append("g")
-        //.attr("class", "axis axis--y")
-        .call(d3.axisLeft(yScale));
+  g.append("path")
+    .datum(time_data)
+    .attr("class", "line")
+    .attr("d", line);
 
-
-
-    // line chart
-    var line = d3.line()
-        .x(function(d, i) { return xScale(d.x); })
-        .y(function(d) { return yScale(d.y); })
-        .curve(d3.curveMonotoneX);
-
-    g.append("path")
-      .attr("class", "line") // Assign a class for styling
-      .attr("d", line(time_data)); // 11. Calls the line generator
-
-    g.selectAll(".dot")
-      .data(time_data)
-      .enter().append("circle") // Uses the enter().append() method
-      .attr("class", "dot") // Assign a class for styling
-      .attr("cx", function(d) { return xScale(d.x) })
-      .attr("cy", function(d) { return yScale(d.y) })
-      .attr("r", 5);
+  g.selectAll("circle")
+    .data(time_data)
+  .enter().append("circle")
+    .attr("class", "circle")
+    .attr("cx", function(d) { return x(d.x); })
+    .attr("cy", function(d) { return y(d.y); })
+    .attr("r", 4);
 
 }
 
@@ -183,7 +164,7 @@ function render_map_plot_v2(data){
 
     var minVal = 1000000;
     var maxVal = 0;
-    console.log("Insite ready")
+    console.log("Inside ready")
     console.log(mapData)
     var timeSeries = {};
 
@@ -245,7 +226,8 @@ function render_map_plot_v2(data){
     // console.log("Population By Country")
     // console.log(populationByCountry)
 
-
+    console.log("Time series Data")
+    console.log(timeSeries)
     svg.selectAll("g").remove();
     svg.append("g")
       .attr("class", "countries")
@@ -327,6 +309,201 @@ function prepare_dropdown() {
     });
 }
 
+function drawScree(value) {
+
+
+      var colorScale = d3.scaleOrdinal(d3.schemeCategory20b);
+      $.post("", {'function': value}, function(data_infunc){
+      data2 = JSON.parse(data_infunc.chart_data)
+
+      console.log(data2)
+
+
+      d3.select("svg").selectAll("*").remove();
+
+      var svg = d3.select("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+
+      var xScale = d3.scaleBand()
+                .rangeRound([0, width])
+                .padding(0.1)
+                .domain(data2.map(function(d) {
+                  return d.x;
+                }));
+
+       var  yScale = d3.scaleLinear()
+                    .rangeRound([height, 0])
+                    .domain([0, d3.max(data2, (function (d) {
+                      return d.y;
+                    }))]);
+
+        var g = svg.append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                  // g.append("text")
+                  //        .attr("x", (width / 2))
+                  //        .attr("y", 0 - (margin.top / 2))
+                  //        .attr("text-anchor", "middle")
+                  //        .style("font-size", "16px")
+                  //        .style("text-decoration", "underline")
+                  //        .text("Scree Plot - 12 PCA Components ");
+
+        // axis-x
+        g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScale).ticks(12))
+
+        g.append("text")
+           .attr("x", width - 20)
+           .attr("y", height - 5)
+           .attr("text-anchor", "end")
+           .attr("stroke", "black")
+           .text("PCA");
+
+
+        // axis-y
+        g.append("g")
+            //.attr("class", "axis axis--y")
+            .call(d3.axisLeft(yScale));
+
+            g.append("text")
+               .attr("x", 10)
+               .attr("y", 20)
+               .attr("text-anchor", "end")
+               .attr("transform", "rotate(-90)")
+               .attr("stroke", "black")
+               .text("Variance");
+
+        var bar = g.selectAll("rect")
+          .data(data2)
+          .enter().append("g");
+
+
+
+        // bar chart
+
+        bar.append("rect")
+          .attr("x", function (d) { return xScale(d.x); })
+          .attr("y", function(d) { return yScale(d.y2); })
+          .attr("width", xScale.bandwidth())
+          .attr("height", function(d) { return height - yScale(d.y2); })
+          .attr("fill", function(d,i){return colorScale(i);});
+
+
+        // labels on the bar chart
+
+
+
+        // line chart
+        var line = d3.line()
+            .x(function(d, i) { return xScale(d.x) + xScale.bandwidth() / 2; })
+            .y(function(d) { return yScale(d.y); })
+            // .curve(d3.curveMonotoneX);
+
+        g.append("path")
+          .attr("class", "line") // Assign a class for styling
+          .attr("d", line(data2)); // 11. Calls the line generator
+
+        g.selectAll(".dot")
+            .data(data2)
+          .enter().append("circle") // Uses the enter().append() method
+            .attr("class", "dot") // Assign a class for styling
+            .attr("cx", function(d, i) { return xScale(d.x) + xScale.bandwidth() / 2; })
+            .attr("cy", function(d) { return yScale(d.y) })
+            .attr("r", 5)
+            .attr("fill", function(d, i){ if (i==4) return "red"});
+
+            g.append("line")
+              .attr("x1", function(d, i) { return xScale(5) + xScale.bandwidth() / 2 })
+              .attr("y1", 0)
+              .attr("x2", function(d, i) { return xScale(5) + xScale.bandwidth() / 2})
+              .attr("y2", height)
+              .style("stroke-width", 2)
+              .style("stroke", "red")
+              .style("fill", "none")
+
+
+
+    console.log(value)
+
+})}
+
+function drawFeats() {
+
+    // Get the data again
+      // Request the "" page and send some additional data along (while still ignoring the return results).
+    // $.post("", {'data': 'received'}, function(data_infunc){
+      // console.log({data_infunc})
+
+      $.post("", {'function': 'feats'}, function(data_infunc){
+      data2 = JSON.parse(data_infunc.chart_data)
+      //console.log(data2);
+
+      //console.log(data2);
+      // Scale the range of the data again
+      console.log(data2)
+
+      d3.select("svg").selectAll("*").remove();
+
+      var svg = d3.select("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+      var xScale = d3.scaleBand()
+                .rangeRound([0, width])
+                .padding(0.1)
+                .domain(data2.map(function(d) {
+                  return d.feature;
+                }));
+
+       var  yScale = d3.scaleLinear()
+                    .rangeRound([height, 0])
+                    .domain([0, d3.max(data2, (function (d) {
+                      return d.value;
+                    }))]);
+
+        var g = svg.append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                  //
+                  // g.append("text")
+                  //        .attr("x", (width / 2))
+                  //        .attr("y", 0 - (margin.top / 2))
+                  //        .attr("text-anchor", "middle")
+                  //        .style("font-size", "16px")
+                  //        .style("text-decoration", "underline")
+                  //        .text("Feature Importance - Top Three Features");
+
+        // axis-x
+        g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScale).ticks(12))
+        // axis-y
+        g.append("g")
+            //.attr("class", "axis axis--y")
+            .call(d3.axisLeft(yScale));
+
+        var bar = g.selectAll("rect")
+          .data(data2)
+          .enter().append("g");
+
+
+
+        // bar chart
+        console.log(data2.length)
+        bar.append("rect")
+          .attr("x", function (d) { return xScale(d.feature); })
+          .attr("y", function(d) { return yScale(d.value); })
+          .attr("width", xScale.bandwidth())
+          .attr("height", function(d) { return height - yScale(d.value); })
+          .attr("fill",
+          function(d,i){
+            if (i<3){
+          return ("salmon");}
+          else{ return "steelblue"} });
+
+  })
+}
+
 
 function prepare_modal(){
   // Get the modal
@@ -344,7 +521,7 @@ function prepare_modal(){
   // When the user clicks on the button, open the modal
   pca_btn.onclick = function() {
     console.log("PCA")
-    modal.style.display = "block";
+    drawFeats()
   }
 
   sim_btn.onclick = function() {
