@@ -9,7 +9,7 @@ var current_year = '2017'
 var minYear = 2500;
 var maxYear = 1500;
 
-var map_features = ["GDP per capita (current LCU)", 
+var map_features = ["GDP per capita (current LCU)",
                     "Exports of goods and services (% of GDP)",
                     "Health expenditure, public (% of GDP)",
                     "Immunization, BCG (% of one-year-old children)",
@@ -360,19 +360,22 @@ function prepare_dropdown() {
 
     $.post("", {'function': 'dropdown:' + current_feature + ";slider:" + current_year}, function(data_infunc){
         mapData = JSON.parse(data_infunc.chart_data);
-        console.log("new data: ")
         mds_data = JSON.parse(data_infunc.mds_data)
         sm_data = JSON.parse(data_infunc.sm_data);
         console.log("new data: ")
         console.log(mds_data)
+        console.log("new data: ")
         console.log(sm_data)
+        console.log("new data: ")
         console.log(mapData)
         bi_data = JSON.parse(data_infunc.bi_data)
         ax_data = JSON.parse(data_infunc.ax_data);
-        console.log("new data: ")
         feat_data = JSON.parse(data_infunc.feat_data)
+        console.log("new data: ")
         console.log(bi_data)
+        console.log("new data: ")
         console.log(ax_data)
+        console.log("new data: ")
         console.log(feat_data)
         console.log("Finish new data")
         render_plot(mapData, mds_data, sm_data, bi_data, ax_data, feat_data);
