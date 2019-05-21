@@ -31,6 +31,12 @@ function initialize(){
   map_svg = d3.select("#graph").append("svg:svg")
   map_svg.attr("id", "map_svg")
 
+  bar_svg = d3.select("#bar_chart").append("svg:svg")
+  bar_svg.attr("id", "bar_svg")
+
+  line_svg = d3.select("#line_chart").append("svg:svg")
+  line_svg.attr("id", "line_svg")
+
 
   console.log("v2");
   render_plot(data);
@@ -320,8 +326,7 @@ function drawScree(value) {
 
       bar_svg.selectAll("*").remove();
 
-      bar_svg = d3.select("svg")
-              .attr("width", width + margin.left + margin.right)
+      bar_svg.attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
 
       var xScale = d3.scaleBand()
@@ -445,8 +450,7 @@ function drawFeats() {
 
       bar_svg.selectAll("*").remove();
 
-      bar_svg = d3.select("svg")
-              .attr("width", width + margin.left + margin.right)
+      bar_svg.attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
       var xScale = d3.scaleBand()
                 .rangeRound([0, width])
