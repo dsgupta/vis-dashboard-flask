@@ -29,8 +29,8 @@ function initialize(){
   prepare_modal();
 
   svg = d3.select("svg")
-            .attr("width", width)
-            .attr("height", height)
+            // .attr("width", width)
+            // .attr("height", height)
 
 
   console.log("v2");
