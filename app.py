@@ -110,16 +110,23 @@ def index():
         # print(jsonify(data))
         # return jsonify(data) # Should be a json string
         if buttonVal.endswith("slider"):
+
+            year = int(buttonVal.replace("slider", ""))
+
             data = map_data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']]
             chart_data = data.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
-            chart_data = json.dumps(chart_data, indent=2)
-            year = int(buttonVal.replace("slider", ""))
-            print("YEAR!", year)
             curr_data = std_data[std_data['Year']==year][top10_featnames]
+            # print("Current data for countries: ")
+            # print(curr_data)
             curr_mds = getMDS(curr_data)
+
+            chart_data = json.dumps(chart_data, indent=2)
             mds_data = curr_mds.to_dict(orient='records')
+            # print("CHART DATA AFTER TO DICT", chart_data)
             mds_data = json.dumps(mds_data, indent=2)
+            # print("After jsoning: ", mds_data)
+
             sm_data = curr_data.to_dict(orient='records')
             sm_data = json.dumps(sm_data, indent=2)
             # print("After jsoning: ", mds_data)
@@ -133,6 +140,7 @@ def index():
             feat_data = json.dumps(feat_data, indent=2)
             data = {'chart_data': chart_data, 'mds_data':mds_data, 'sm_data':sm_data, 'bi_data': bi_data, 'axes_data': axes_data, 'feat_data':feat_data}
             return jsonify(data)
+
         if buttonVal.startswith("dropdown"):
             print("BUTTON YAY, ", buttonVal)
             feat = buttonVal.split(";")[0].split(":")[1]
@@ -145,7 +153,12 @@ def index():
             chart_data = data.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
             chart_data = json.dumps(chart_data, indent=2)
-            mds_data = mds1.to_dict(orient='records')
+            curr_data = std_data[std_data['Year']==year][top10_featnames]
+            # print("Current data for countries: ")
+            # print(curr_data)
+            curr_mds = getMDS(curr_data)
+
+            mds_data = curr_mds.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
             mds_data = json.dumps(mds_data, indent=2)
             # print("After jsoning: ", mds_data)

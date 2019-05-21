@@ -29,7 +29,7 @@ var map_svg, bar_svg, line_svg, feat_svg, bi_svg, sm_svg;
 var current_feature;
 
 
-function initialize(data, mds_data, sm_data, bi_data, ax_data, feat_data){
+function initialize(data, mds_data, sm_data, bi_data, feat_data){
   // console.log("v1")
   // render_map_plot();
 
@@ -57,11 +57,11 @@ function initialize(data, mds_data, sm_data, bi_data, ax_data, feat_data){
 
 
   console.log("v2");
-  render_plot(data, mds_data, sm_data, bi_data, ax_data, feat_data);
+  render_plot(data, mds_data, sm_data, bi_data, feat_data);
 }
 
 
-function render_plot(data, mds_data, sm_data, bi_data, ax_data, feat_data){
+function render_plot(data, mds_data, sm_data, bi_data, feat_data){
 
   // d3.selectAll("svg > *").remove();
   render_map_plot_v2(data);
@@ -73,7 +73,7 @@ function render_plot(data, mds_data, sm_data, bi_data, ax_data, feat_data){
   console.log("Finish sm")
   drawScatter(mds_data);
   drawScatterMatrix(sm_data);
-  drawBiPlot(bi_data, ax_data);
+  drawBiPlot(bi_data);
   drawFeats(feat_data)
 
 }
@@ -195,7 +195,7 @@ function render_map_plot_v2(data, mds_data){
   function ready(error, country_features) {
     if (error) throw error;
 
-    var data_column = 'GDP per capita (current LCU)'
+    var data_column = current_feature
 
     var populationByCountry = {};
 
@@ -260,14 +260,14 @@ function render_map_plot_v2(data, mds_data){
         console.log(sm_data)
         console.log(mapData)
         bi_data = JSON.parse(data_infunc.bi_data)
-        ax_data = JSON.parse(data_infunc.ax_data);
+        // ax_data = JSON.parse(data_infunc.ax_data);
         console.log("new data: ")
         feat_data = JSON.parse(data_infunc.feat_data)
         console.log(bi_data)
-        console.log(ax_data)
+        // console.log(ax_data)
         console.log(feat_data)
         console.log("Finish new data")
-        render_plot(mapData, mds_data, sm_data, bi_data, ax_data, feat_data);
+        render_plot(mapData, mds_data, sm_data, bi_data, feat_data);
       });
     };
 
@@ -369,16 +369,16 @@ function prepare_dropdown() {
         console.log("new data: ")
         console.log(mapData)
         bi_data = JSON.parse(data_infunc.bi_data)
-        ax_data = JSON.parse(data_infunc.ax_data);
+        // /ax_data = JSON.parse(data_infunc.ax_data);
         feat_data = JSON.parse(data_infunc.feat_data)
         console.log("new data: ")
         console.log(bi_data)
         console.log("new data: ")
-        console.log(ax_data)
+        // console.log(ax_data)
         console.log("new data: ")
         console.log(feat_data)
         console.log("Finish new data")
-        render_plot(mapData, mds_data, sm_data, bi_data, ax_data, feat_data);
+        render_plot(mapData, mds_data, sm_data, bi_data, feat_data);
     });
 
     // render_plot();
@@ -468,11 +468,11 @@ function drawScatter(mds_data){
         .attr("cy", function(d) { return yScale(d.y) })
 }
 
-function drawBiPlot(bi_data, axes_data){
+function drawBiPlot(bi_data){
 
   dots = bi_data
   console.log(dots)
-  vectors = axes_data
+  // vectors = axes_data
 
   var con_width = document.getElementById('bi_chart').offsetWidth;
   var con_height = document.getElementById('bi_chart').offsetHeight;
