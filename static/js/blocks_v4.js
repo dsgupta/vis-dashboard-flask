@@ -61,7 +61,7 @@ function initialize(data, mds_data, sm_data, bi_data, feat_data){
 }
 
 
-function render_plot(data, mds_data, sm_data, bi_data, feat_data, drawMDS=true, drawFeat=true, drawBi=true){
+function render_plot(data, mds_data, sm_data, bi_data, feat_data, drawMDS=true, drawSM=true, drawFeat=true, drawBi=true){
 
   // d3.selectAll("svg > *").remove();
   render_map_plot_v2(data);
@@ -74,11 +74,13 @@ function render_plot(data, mds_data, sm_data, bi_data, feat_data, drawMDS=true, 
   if(drawMDS){
     drawScatter(mds_data);
   }
-  drawScatterMatrix(sm_data);
-  if(drawMDS){
+  if(drawSM){
+    drawScatterMatrix(sm_data);
+  }
+  if(drawFeat){
     drawBiPlot(bi_data);
   }
-  if(drawMDS){
+  if(drawBi){
     drawFeats(feat_data)
   }
 
@@ -246,7 +248,8 @@ function render_map_plot_v2(data){
 
     console.log("Min Val: " + minVal);
     console.log("Max Val: " + maxVal);
-
+    mds_data;
+    sm_data;
     document.getElementById("slider").oninput = function() {
       var val = document.getElementById("slider").value
       var slidermin = document.getElementById("slider").min
@@ -255,12 +258,13 @@ function render_map_plot_v2(data){
 
       current_year = minYear + Math.floor((maxYear-minYear)*(val-slidermin)/(slidermax - slidermin))
       console.log(current_year);
+
+      render_plot(mapData, mds_data, sm_data, bi_data, feat_data, drawMDS=false, drawFeat=false, drawBi=false, drawSM=false);
       param = current_year.toString().concat("slider");
-      $.post("", {'function': 'dropdown:' + current_feature + ";slider:" + current_year}, function(data_infunc){
+      $.post("", {'function': param}, function(data_infunc){
           mds_data = JSON.parse(data_infunc.mds_data)
-          drawScatter(mds_data);
+          sm_data = JSON.parse(data_infunc.sm_data)
       });
-      render_plot(mapData, mds_data, sm_data, bi_data, feat_data, drawMDS=false, drawFeat=false, drawBi=false);
     };
 
     var color = d3.scaleLinear()
@@ -335,6 +339,8 @@ function render_map_plot_v2(data){
     map_g.attr("transform", "translate(" + (map_bb.x - g_bb.x) + "," + (map_bb.y - g_bb.y - 30) + ")");
 
     console.log("Map plotted for " + current_year);
+    drawScatter(mds_data);
+    drawScatterMatrix(sm_data)
 
   }
 }

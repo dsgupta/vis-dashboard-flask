@@ -113,13 +113,16 @@ def index():
         if buttonVal.endswith("slider"):
 
             year = int(buttonVal.replace("slider", ""))
-
             curr_mds = year_mds[year]
             mds_data = curr_mds.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
             mds_data = json.dumps(mds_data, indent=2)
             # print("After jsoning: ", mds_data)
-            data = {'mds_data':mds_data}
+            curr_data = std_data[std_data['Year']==year][top10_featnames]
+            sm_data = curr_data.to_dict(orient='records')
+            sm_data = json.dumps(sm_data, indent=2)
+            # print("After jsoning: ", mds_data)
+            data = {'sm_data':sm_data, 'mds_data':mds_data}
             return jsonify(data)
 
         if buttonVal.startswith("dropdown"):
@@ -134,11 +137,9 @@ def index():
             chart_data = data.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
             chart_data = json.dumps(chart_data, indent=2)
-            curr_data = std_data[std_data['Year']==year][top10_featnames]
             # print("Current data for countries: ")
             # print(curr_data)
-            curr_mds = getMDS(curr_data)
-
+            curr_mds = year_mds[year]
             mds_data = curr_mds.to_dict(orient='records')
             # print("CHART DATA AFTER TO DICT", chart_data)
             mds_data = json.dumps(mds_data, indent=2)
@@ -201,7 +202,7 @@ def biplot(data):
 
 def getData():
 
-    data = pd.read_csv(r'world_bank_data_small.csv')
+    data = pd.read_csv(r'world_bank_relevant.csv')
     cols = data.columns
     std = data.copy()
     std[cols[3:]] = StandardScaler().fit_transform(std[cols[3:]])
@@ -219,6 +220,7 @@ if __name__ == "__main__":
     top10_feats = feats[:10][:]
     top10_scree = scree[:10][:]
     top10_featnames = feat_names[:10][:]
+    print(top10_featnames)
     biplot(std_data[top10_featnames])
 
     # print("Current data for countries: ")
