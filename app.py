@@ -6,7 +6,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 import math
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import pairwise_distances
 from sklearn.manifold import MDS
@@ -27,14 +27,31 @@ default = None
 
 def getScree(data):
 
+    print("No. of columns: ", len(data.columns))
+    num_cols = data.columns[3:]
+    data = data[num_cols]
+    print("After removing: ", len(data.columns))
     pca = PCA(n_components=data.shape[1]).fit(data)
+    print(pca)
     y_vals = np.cumsum(pca.explained_variance_ratio_)
+    print("No of explained variance: ", len(y_vals))
     scree = pd.DataFrame({"x":list(range(1,data.shape[1]+1)), "y":y_vals, "y2":pca.explained_variance_ratio_})
 
     feature_imp = getMaxPCALoadings(5,pca)
     features = []
     for i in np.argsort(feature_imp)[::-1]:
         features.append(data.columns[i])
+
+    feature_imp.sort(reverse=True)
+    feature_values = pd.DataFrame({"feature":features, "value":feature_imp})
+    print("Computed scree!", scree)
+    top_feats = features[:3]
+    return (scree, feature_values, top_feats)
+
+    feature_imp = getMaxPCALoadings(5,pca)
+    features = []
+    for i in np.argsort(feature_imp)[::-1]:
+        features.append(num_cols[i])
 
     feature_imp.sort(reverse=True)
     feature_values = pd.DataFrame({"feature":features, "value":feature_imp})
@@ -145,37 +162,20 @@ def index():
 elbow = None
 def getData():
 
-    data = pd.read_csv(r'inequality_data.csv')
-    # random = data.sample(frac=0.5, random_state=1)
-    # X = data.values
-    # k, elbow = getNumK(X)
-    # print(k, elbow)
-    # cols = data.columns
-    # data['cluster'] = KMeans(n_clusters=k).fit_predict(X)
-    # stratified = data.groupby('cluster').apply(lambda x: x.sample(frac=0.5, random_state=1))
-    # data_scale = pd.DataFrame(MinMaxScaler().fit_transform(X), columns = cols)
-    # random_scale = pd.DataFrame(MinMaxScaler().fit_transform(random), columns = cols)
-    # strat_scale = pd.DataFrame(MinMaxScaler().fit_transform(stratified.drop('cluster', axis=1)), columns = cols)
-    # return (data_scale, random_scale, strat_scale, elbow)
-    return data[['Entity', 'Code', 'Year', 'gdp_per_capita']].dropna()
-
-def getNumK(X):
-
-    res = []
-    n_cluster = range(2,21)
-    for n in n_cluster:
-        kmeans = KMeans(n_clusters=n)
-        kmeans.fit(X)
-        res.append(np.mean(np.min(cdist(X, kmeans.cluster_centers_, 'euclidean'), axis=1)))
-
-    elbow = pd.DataFrame({"x":list(n_cluster), "y":res})
-    print(elbow)
-    return (7, elbow)
+    data = pd.read_csv(r'world_bank_data_small.csv')
+    cols = data.columns
+    std = data.copy()
+    std[cols[3:]] = StandardScaler().fit_transform(std[cols[3:]])
+    return data[['Entity', 'Code', 'Year', 'GDP per capita (current LCU)']], std
 
 if __name__ == "__main__":
 
     # data_scale, random_scale, strat_scale, elbow = getData()
-    default = getData()
+    default, std = getData()
+    scree, feats, feat_names= getScree(std)
+    print("Scree: ", scree)
+    print("Features: ", feats)
+    print("Feat names: ", feat_names)
     # scaled[0] = data_scale
     # scaled[1] = random_scale
     # scaled[2] = strat_scale

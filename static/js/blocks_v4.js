@@ -175,7 +175,7 @@ function render_map_plot_v2(data){
   function ready(error, country_features) {
     if (error) throw error;
 
-    var data_column = 'gdp_per_capita'
+    var data_column = 'GDP per capita (current LCU)'
 
     var populationByCountry = {};
 
