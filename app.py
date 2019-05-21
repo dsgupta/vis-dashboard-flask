@@ -201,7 +201,7 @@ def biplot(data):
 
 def getData():
 
-    data = pd.read_csv(r'world_bank_data_small.csv')
+    data = pd.read_csv(r'world_bank_relevant.csv')
     cols = data.columns
     std = data.copy()
     std[cols[3:]] = StandardScaler().fit_transform(std[cols[3:]])

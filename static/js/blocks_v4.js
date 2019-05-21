@@ -726,6 +726,10 @@ function drawFeats(feat_data) {
       g.append("g")
           .attr("transform", "translate(0," + (con_height-CONTAINER_MARGIN/2) + ")")
           .call(d3.axisBottom(xScale).ticks(12))
+
+           .selectAll("text")  
+           .style("text-anchor", "end")
+           .attr("transform", "rotate(-35)");
       // axis-y
       g.append("g")
           //.attr("class", "axis axis--y")
@@ -741,9 +745,9 @@ function drawFeats(feat_data) {
       console.log(data2.length)
       bar.append("rect")
         .attr("x", function (d) { return xScale(d.feature); })
-        .attr("y", function(d) { return yScale(d.value); })
+        .attr("y", function(d, i) { return yScale(d.value); })
         .attr("width", xScale.bandwidth())
-        .attr("height", function(d) { return con_height-CONTAINER_MARGIN/2 - yScale(d.value); })
+        .attr("height", function(d, i) { return con_height-CONTAINER_MARGIN/2 - yScale(d.value); })
         .attr("fill",
         function(d,i){
           if (i<3){
