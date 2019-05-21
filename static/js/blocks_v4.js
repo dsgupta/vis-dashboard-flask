@@ -9,7 +9,7 @@ var current_year = '2017'
 var minYear = 2500;
 var maxYear = 1500;
 
-var map_svg, bar_svg, line_svg;
+var map_svg, bar_svg, line_svg, feat_svg, sm_svg;
 
 
 var map_features = ["GDP per Capita", "Life Expectancy"];
@@ -81,6 +81,7 @@ function render_scatter_plot(data){
   var line = d3.line()
     .x(function(d) { return x(d.x); })
     .y(function(d) { return y(d.y); })
+    .curve(d3.curveMonotoneX)
 
 
   x.domain(time_data.map(function(d) { return d.x; }));
@@ -508,6 +509,110 @@ function drawBiPlot(){
   dots = JSON.parse(data_infunc.chart_data)
   console.log(dots)
   vectors = JSON.parse(data_infunc.axes_data)
+})
+}
+
+function drawScatterMatrix(value){
+  console.log(value)
+  $.post("", {'function': value}, function(data_infunc){
+  data = JSON.parse(data_infunc.chart_data)
+  //console.log(data2);
+
+  //console.log(data2);
+  // Scale the range of the data again
+  console.log(data)
+
+    var width =  950 - margin.left - margin.right,
+      size = 150,
+      padding = 20;
+
+    var x = d3.scaleLinear()
+        .range([padding / 2, size - padding / 2]);
+
+    var y = d3.scaleLinear()
+        .range([size - padding / 2, padding / 2]);
+
+    var xAxis = d3.axisBottom()
+        .scale(x)
+        .ticks(6);
+      var yAxis = d3.axisLeft()
+      .scale(y)
+      .ticks(6);
+  d3.select("svg").selectAll("*").remove();
+  var domainByTrait = {},
+      traits = d3.keys(data[0]),
+      n = traits.length;
+
+  traits.forEach(function(trait) {
+    domainByTrait[trait] = d3.extent(data, function(d) { return d[trait]; });
+  });
+
+  xAxis.tickSize(size * n);
+  yAxis.tickSize(-size * n);
+
+
+  var svg = d3.select("svg")
+      .attr("width", size * n + padding)
+      .attr("height", size * n + padding)
+    .append("g")
+      .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
+
+  svg.selectAll(".x.axis")
+      .data(traits)
+    .enter().append("g")
+      .attr("class", "x axis")
+      .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
+      .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
+
+  svg.selectAll(".y.axis")
+      .data(traits)
+    .enter().append("g")
+      .attr("class", "y axis")
+      .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
+      .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
+
+  var cell = svg.selectAll(".cell")
+      .data(cross(traits, traits))
+    .enter().append("g")
+      .attr("class", "cell")
+      .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; })
+      .each(plot);
+
+  // Titles for the diagonal.
+  cell.filter(function(d) { return d.i === d.j; }).append("text")
+      .attr("x", padding)
+      .attr("y", padding)
+      .attr("dy", ".71em")
+      .text(function(d) { return d.x; });
+
+      function plot(p) {
+        var cell = d3.select(this);
+
+        x.domain(domainByTrait[p.x]);
+        y.domain(domainByTrait[p.y]);
+
+        cell.append("rect")
+            .attr("class", "frame")
+            .attr("x", padding / 2)
+            .attr("y", padding / 2)
+            .attr("width", size - padding)
+            .attr("height", size - padding);
+
+        cell.selectAll("circle")
+            .data(data)
+          .enter().append("circle")
+            .attr("cx", function(d) { return x(d[p.x]); })
+            .attr("cy", function(d) { return y(d[p.y]); })
+            .attr("r", 4)
+            .style("fill", function(d) { return "#71338e"; });
+      }
+
+      function cross(a, b) {
+        var c = [], n = a.length, m = b.length, i, j;
+        for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
+        return c;
+      }
+
 })
 }
 
