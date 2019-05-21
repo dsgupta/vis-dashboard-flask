@@ -17,9 +17,10 @@ app = Flask(__name__)
 scree = None
 feats = None
 feat_names = None
-top20_feats = None
-top20_scree = None
-top20_featnames = None
+top10_feats = None
+top10_scree = None
+top10_featnames = None
+biplot_data = None
 projected = [[]]*3
 mds1 = [[]]*3
 mds2 = [[]]*3
@@ -30,10 +31,6 @@ map_data = None
 
 def getScree(data):
 
-    print("No. of columns: ", len(data.columns))
-    num_cols = data.columns[3:]
-    data = data[num_cols]
-    print("After removing: ", len(data.columns))
     pca = PCA(n_components=data.shape[1]).fit(data)
     print(pca)
     y_vals = np.cumsum(pca.explained_variance_ratio_)
@@ -59,13 +56,8 @@ def getScree(data):
     feature_imp.sort(reverse=True)
     feature_values = pd.DataFrame({"feature":features, "value":feature_imp})
     print("Computed scree!", scree)
-    top_feats = features[:3]
-    return (scree, feature_values, top_feats)
 
-def getPCA2(data):
-    data_pc2 = PCA(n_components=2).fit_transform(data)
-    pc2 = pd.DataFrame({"x":data_pc2[:,0], "y":data_pc2[:,1]})
-    return pc2
+    return (scree, feature_values, features)
 
 def getMaxPCALoadings(num_c, pca):
 
@@ -168,14 +160,25 @@ def index():
 # @app.route("/member", methods = ['POST', 'GET'])
 # def index():
     ###
-elbow = None
+def biplot(data):
+    # print("Got the data", data)
+    pca = PCA()
+    projected = pca.fit_transform(data)
+    score = projected[:,0:2]
+    coeff = np.transpose(pca.components_[0:2,:])
+    xs = score[:,0]
+    ys = score[:,1]
+    biplot_data = pd.DataFrame({"x1":0, "y1":0, "x2":coeff[:,0], "y2":coeff[:,1], "feat_name":data.columns})
+    print("Completed setting biplot")
+    print(biplot_data)
+
 def getData():
 
     data = pd.read_csv(r'world_bank_data_small.csv')
     cols = data.columns
     std = data.copy()
     std[cols[3:]] = StandardScaler().fit_transform(std[cols[3:]])
-    return data, std
+    return data, std[cols[3:]]
 
 if __name__ == "__main__":
 
@@ -186,9 +189,12 @@ if __name__ == "__main__":
     print("Features: ", feats)
     print("Feat names: ", feat_names)
     print(feats.shape)
-    top20_feats = feats[:20][:]
-    top20_scree = scree[:20][:]
-    top20_featnames = feat_names[:20][:]
+    top10_feats = feats[:10][:]
+    top10_scree = scree[:10][:]
+    top10_featnames = feat_names[:10][:]
+    std_data = std_data[top10_featnames]
+    biplot(std_data)
+
     # scaled[0] = data_scale
     # scaled[1] = random_scale
     # scaled[2] = strat_scale
