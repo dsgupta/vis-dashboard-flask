@@ -355,8 +355,6 @@ function prepare_dropdown() {
     console.log("-------------------------------------------------------")
     console.log("F:dropdownChange()")
 
-    $.post("", {'function': ''}, function(data_infunc){
-
     var new_feature = d3.select(this).property('value');
     current_feature = new_feature;
 
